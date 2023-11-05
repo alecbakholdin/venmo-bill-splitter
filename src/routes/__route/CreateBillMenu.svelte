@@ -5,12 +5,18 @@
 	import * as Sheet from '$lib/components/ui/sheet';
 	import type { SuperValidated } from 'sveltekit-superforms';
 	import { CreateBillSchema } from './schemas.js';
+	import Icon from '@iconify/svelte';
 
 	export let form: SuperValidated<typeof CreateBillSchema>;
 
-	const uploadOptions: { icon: string; text: string; capture: boolean }[] = [
-		{ icon: 'mdi:camera', text: 'Take a Picture', capture: true }
-		/* { icon: 'mdi:upload', text: 'Upload an Image', capture: false } */
+	const uploadOptions: {
+		name: 'receiptPicture' | 'receiptFile';
+		icon: string;
+		text: string;
+		capture: boolean;
+	}[] = [
+		{ name: 'receiptPicture', icon: 'mdi:camera', text: 'Take a Picture', capture: true },
+		{ name: 'receiptFile', icon: 'mdi:upload', text: 'Upload an Image', capture: false }
 	];
 </script>
 
@@ -27,29 +33,40 @@
 			class="w-full max-w-md"
 			enctype="multipart/form-data"
 			options={{ onUpdate: console.log }}
-			let:formValues
+			let:submitting
 		>
-			{JSON.stringify(formValues)}
-			{#each uploadOptions as { icon, text, capture }}
-				<Form.Field {config} name="receipt">
-					<Form.Label
-						class="w-full cursor-pointer p-2 rounded-md hover:bg-muted flex items-center gap-2"
-					>
-						<BubbleIcon {icon} />
-						<span class="text-lg">{text}</span>
-					</Form.Label>
-					<Form.Input type="file" accept="image/*" class="hidden" {capture} on:change={e => console.log(e.currentTarget.form?.requestSubmit())} />
-				</Form.Field>
-			{/each}
-			<Form.Button
-				variant="ghost"
-				class="w-full h-[62px] p-2 rounded-md hover:bg-muted flex justify-start"
-			>
-				<div class="flex gap-2 items-center">
-					<BubbleIcon icon="mdi:edit" />
-					<span class="text-lg">Custom</span>
+			{#if submitting}
+				<div class="w-full grid place-items-center h-20">
+					<Icon icon="mingcute:loading-fill" class="text-xl animate-spin" />
 				</div>
-			</Form.Button>
+			{:else}
+				{#each uploadOptions as { name, icon, text, capture }}
+					<Form.Field {config} {name}>
+						<Form.Label
+							class="w-full cursor-pointer p-2 rounded-md hover:bg-muted flex items-center gap-2"
+						>
+							<BubbleIcon {icon} />
+							<span class="text-lg">{text}</span>
+						</Form.Label>
+						<Form.Input
+							type="file"
+							accept="image/*"
+							class="hidden"
+							{capture}
+							on:change={(e) => console.log(e.currentTarget.form?.requestSubmit())}
+						/>
+					</Form.Field>
+				{/each}
+				<Form.Button
+					variant="ghost"
+					class="w-full h-[62px] p-2 rounded-md hover:bg-muted flex justify-start"
+				>
+					<div class="flex gap-2 items-center">
+						<BubbleIcon icon="mdi:edit" />
+						<span class="text-lg">Custom</span>
+					</div>
+				</Form.Button>
+			{/if}
 		</Form.Root>
 	</Sheet.Content>
 </Sheet.Root>

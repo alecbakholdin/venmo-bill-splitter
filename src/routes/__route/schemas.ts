@@ -1,5 +1,6 @@
 import { z } from "zod";
 
 export const CreateBillSchema = z.object({
-    receipt: z.any().optional()
+    receiptFile: z.any().optional(),
+    receiptPicture: z.any().optional()
 })

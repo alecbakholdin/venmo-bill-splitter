@@ -1,16 +1,15 @@
 <script lang="ts">
-	import BillTitle from './__route/BillTitle.svelte';
-	import BillItemRow from './__route/BillItemRow.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as Form from '$lib/components/ui/form';
-	import Separator from '$lib/components/ui/separator/separator.svelte';
+	import { BillSchema } from '$lib/firestore/schemas/Bill';
 	import Icon from '@iconify/svelte';
 	import { slide } from 'svelte/transition';
-	import { BillSchema } from '$lib/firestore/schemas/Bill';
-	import BillFriendRow from './__route/BillFriendRow.svelte';
 	import BillCreateFriend from './__route/BillCreateFriend.svelte';
 	import BillFriendInviter from './__route/BillFriendInviter.svelte';
+	import BillFriendRow from './__route/BillFriendRow.svelte';
+	import BillItemRow from './__route/BillItemRow.svelte';
+	import BillTitle from './__route/BillTitle.svelte';
 
 	export let data;
 </script>
