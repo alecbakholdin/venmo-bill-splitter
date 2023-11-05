@@ -22,21 +22,6 @@
 
 	const formContext = getForm<z.ZodEffects<typeof BillSchema>>();
 	$: ({ form } = formContext);
-	type FriendItem = {
-		index: number;
-		title: string;
-		totalOwed: number;
-	};
-	$: friendItems = $form.items
-		.filter((item) => item.friends.find((fr) => fr.venmo === friend.venmo))
-		.map(
-			(item, i) =>
-				({
-					index: i,
-					title: item.title,
-					totalOwed: item.friends.find((fr) => fr.venmo === friend.venmo)!.totalOwed
-				} satisfies FriendItem)
-		);
 	const config = { form: formContext, schema: BillSchema };
 </script>
 
@@ -59,7 +44,7 @@
 
 		<VenmoPersonRow venmo={friend.venmo} />
 		<div class="flex flex-col">
-			{#each friendItems as item}
+			{#each friend.items ?? [] as item}
 				<div class="w-full flex justify-between">
 					<span>{item.title}</span>
 					<span class="font-bold">${item.totalOwed.toFixed(2)}</span>
@@ -80,7 +65,6 @@
 		</div>
 
 		<DialogFooter class="gap-1">
-			<DialogClose class={cn(buttonVariants({ variant: 'outline' }))}>Close</DialogClose>
 			<DialogClose
 				class={cn(buttonVariants({ variant: 'destructive' }))}
 				on:click={() =>
@@ -93,13 +77,14 @@
 										({ venmo }) => venmo !== formatVenmo(friend.venmo)
 									);
 								}
-								return BillSchema.parse($form);
+								return $form;
 							}),
 						300
 					)}
 			>
 				Delete
 			</DialogClose>
+			<DialogClose class={cn(buttonVariants({ variant: 'outline' }))}>Close</DialogClose>
 		</DialogFooter>
 	</DialogContent>
 </Dialog>

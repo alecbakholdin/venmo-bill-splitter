@@ -1,20 +1,22 @@
 <script lang="ts">
-	import { buttonVariants } from '$lib/components/ui/button';
-	import Button from '$lib/components/ui/button/button.svelte';
+	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { FormField, FormInput, FormLabel, FormValidation } from '$lib/components/ui/form';
-	import FormSwitch from '$lib/components/ui/form/form-switch.svelte';
-	import { Tabs, TabsContent } from '$lib/components/ui/tabs';
-	import TabsList from '$lib/components/ui/tabs/tabs-list.svelte';
-	import TabsTrigger from '$lib/components/ui/tabs/tabs-trigger.svelte';
+	import {
+		FormField,
+		FormInput,
+		FormLabel,
+		FormValidation,
+		FormSwitch
+	} from '$lib/components/ui/form';
+	import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
 	import { BillItemSchema, BillSchema } from '$lib/firestore/schemas/Bill';
 	import { cn } from '$lib/utils.js';
 	import Icon from '@iconify/svelte';
 	import { getForm } from 'formsnap';
+	import { slide } from 'svelte/transition';
 	import type { z } from 'zod';
 	import BillItemFriendAdder from './BillItemFriendAdder.svelte';
 	import VenmoPersonRow from './VenmoPersonRow.svelte';
-	import { slide } from 'svelte/transition';
 
 	type T = z.input<typeof BillItemSchema>;
 	export let i: number;
@@ -129,9 +131,12 @@
 				</div>
 			</TabsContent>
 		</Tabs>
-		<Dialog.Footer class="gap-2">
+		<Dialog.Footer class="gap-1">
+			<Dialog.Close disabled={!itemValid} class={cn(buttonVariants({ variant: 'outline' }))}>
+				Close
+			</Dialog.Close>
 			<Dialog.Close
-				class={cn(buttonVariants({ variant: 'outline' }))}
+				class={cn(buttonVariants({ variant: 'destructive' }))}
 				on:click={() =>
 					setTimeout(
 						() =>
@@ -144,7 +149,6 @@
 			>
 				Delete
 			</Dialog.Close>
-			<Dialog.Close disabled={!itemValid} class={cn(buttonVariants())}>Submit</Dialog.Close>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

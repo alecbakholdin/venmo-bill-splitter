@@ -10,8 +10,8 @@
 	} from '$lib/components/ui/dialog';
 	import DialogHeader from '$lib/components/ui/dialog/dialog-header.svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
-	import { BillSchema } from '$lib/firestore/schemas/Bill';
-	import { cn } from '$lib/utils';
+	import { BillFriendSchema, BillSchema } from '$lib/firestore/schemas/Bill';
+	import { cn, getDefaults } from '$lib/utils';
 	import Icon from '@iconify/svelte';
 	import { getForm } from 'formsnap';
 	import type { z } from 'zod';
@@ -48,9 +48,12 @@
 				on:click={() => {
 					form.form.update(($form) => {
 						if (!$form.friends.find((x) => x.venmo === formatVenmo(venmo))) {
+							console.log(getDefaults(BillFriendSchema))
 							$form.friends.push({
 								total: 0,
-								venmo
+								venmo,
+								items: [],
+								subtotal: 0
 							});
 						}
 						for (const item of $form.items) {

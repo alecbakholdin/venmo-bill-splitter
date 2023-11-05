@@ -1,7 +1,8 @@
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { clsx, type ClassValue } from "clsx";
 import { cubicOut } from "svelte/easing";
 import type { TransitionConfig } from "svelte/transition";
+import { twMerge } from "tailwind-merge";
+import { z } from "zod";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -60,3 +61,12 @@ export const flyAndScale = (
         easing: cubicOut
     };
 };
+
+export function getDefaults<Schema extends z.AnyZodObject>(schema: Schema) {
+    return Object.fromEntries(
+        Object.entries(schema.shape).map(([key, value]) => {
+            if (value instanceof z.ZodDefault) return [key, value._def.defaultValue()]
+            return [key, undefined]
+        })
+    )
+}

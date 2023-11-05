@@ -1,7 +1,6 @@
 <script lang="ts">
 	import BillTitle from './__route/BillTitle.svelte';
 	import BillItemRow from './__route/BillItemRow.svelte';
-	import * as Avatar from '$lib/components/ui/avatar';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as Form from '$lib/components/ui/form';
@@ -35,9 +34,6 @@
 	<Card.Root class="rounded-lg mx-2 sm:mx-0">
 		<Card.Header>
 			<Card.Title class="flex items-center gap-2">
-				<Avatar.Root>
-					<Avatar.Fallback>{data.bill.title.charAt(0)}</Avatar.Fallback>
-				</Avatar.Root>
 				<div class="flex-grow">
 					<BillTitle />
 					<p class="text-muted-foreground text-md font-thin">{data.bill.dateCreated}</p>
@@ -129,7 +125,7 @@
 		</Card.Footer>
 	</Card.Root>
 
-	<Card.Root class="rounded-lg mx-2 sm:mx-0 mt-4">
+	<Card.Root class="rounded-lg mx-2 sm:mx-0 my-4">
 		<Card.Content class="p-4">
 			<Form.Button disabled={!tainted} class="w-full">
 				<div class="flex items-center gap-1">

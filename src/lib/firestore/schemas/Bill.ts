@@ -35,6 +35,12 @@ export const BillItemSchema = z
 
 export const BillFriendSchema = z.object({
 	venmo: VenmoSchema,
+	items: z.array(
+		z.object({
+			title: z.string(),
+			totalOwed: z.number()
+		})
+	),
 	subtotal: z.number(),
 	total: z.number()
 });
@@ -69,12 +75,19 @@ export const BillSchema = z
 			subtotal,
 			total,
 			friends: values.friends.map((friend) => {
+				const items = values.items.filter((item) =>
+					item.friends.find((fr) => fr.venmo === friend.venmo)
+				);
 				const friendSubtotal = values.items
 					.flatMap((item) => item.friends.filter((itemFriend) => itemFriend.venmo === friend.venmo))
 					.reduce((total, { totalOwed }) => total + totalOwed, 0);
 				const friendTotal = friendSubtotal + (friendSubtotal / subtotal) * (tax + tip);
 				return {
 					...friend,
+					items: items.map((item) => ({
+						title: item.title,
+						totalOwed: item.friends.find((fr) => fr.venmo === friend.venmo)!.totalOwed
+					})),
 					subtotal: friendSubtotal,
 					total: friendTotal
 				};

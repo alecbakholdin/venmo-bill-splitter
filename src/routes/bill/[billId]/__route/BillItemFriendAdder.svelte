@@ -39,7 +39,7 @@
 	>
 		<Icon icon="mdi:people-add" class="text-2xl"/>
 	</DialogTrigger>
-	<DialogContent let:openStore>
+	<DialogContent>
 		<DialogHeader>
 			<DialogTitle>Add Friends to Item</DialogTitle>
 		</DialogHeader>
