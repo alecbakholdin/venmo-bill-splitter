@@ -1,10 +1,9 @@
-import { BillItemSchema, BillSchema } from '$lib/firestore/schemas/Bill';
+import { BillSchema } from '$lib/firestore/schemas/Bill';
 import { fail, redirect } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/server';
 import { formatVenmo } from '../__route/VenmoPersonRow.svelte';
 import { getBillFromJwt } from '../__route/inviteAuth.server';
 import { SplitBillSchema } from './__route/splitForm';
-import { ConstructionIcon } from 'lucide-svelte';
 
 export async function load({ url, params }) {
 	const bill = await getBillFromJwt(url.searchParams.get('auth'), params.billId, 'split');
