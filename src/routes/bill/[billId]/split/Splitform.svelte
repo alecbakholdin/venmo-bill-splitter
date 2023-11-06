@@ -43,6 +43,10 @@
 	</FormField>
 	<VenmoPersonRow venmo={$form.venmo} bind:valid={validVenmo} />
 	<div class="text-lg font-bold">Items</div>
+	<p class="text-muted-foreground text-sm pb-2">
+		Select the items that you are responsible for. If you split an item with another person, both of
+		you will need to select the item on your own devices.
+	</p>
 	<div class="flex flex-col gap-2 pb-4">
 		{#each $form.items as selected, i}
 			{@const item = bill.items[i]}
@@ -65,7 +69,7 @@
 					</FormLabel>
 				</div>
 			</FormField>
-			<Separator class="last:hidden"/>
+			<Separator class="last:hidden" />
 		{/each}
 	</div>
 

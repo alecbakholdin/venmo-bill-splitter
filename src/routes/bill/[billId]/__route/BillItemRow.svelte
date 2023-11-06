@@ -17,6 +17,8 @@
 	import type { z } from 'zod';
 	import BillItemFriendAdder from './BillItemFriendAdder.svelte';
 	import VenmoPersonRow from './VenmoPersonRow.svelte';
+	import { Alert } from '$lib/components/ui/alert';
+	import AlertDescription from '$lib/components/ui/alert/alert-description.svelte';
 
 	type T = z.input<typeof BillItemSchema>;
 	export let i: number;
@@ -30,8 +32,15 @@
 </script>
 
 <Dialog.Root closeOnOutsideClick={false}>
-	<Dialog.Trigger class={cn(buttonVariants({ variant: 'ghost', class: 'w-full' }))}>
-		<div class="grid grid-cols-[1fr_auto] w-full">
+	<Dialog.Trigger asChild let:builder>
+		<Button
+			builders={[builder]}
+			type="button"
+			variant="ghost"
+			class="w-full grid grid-cols-[1fr_auto] border {item.friends.length
+				? 'border-transparent'
+				: 'border-destructive'}"
+		>
 			<span class="font-bold text-start">{item.title}</span>
 			<span class="row-span-2 place-self-center font-bold text-md">
 				${total.toFixed(2)}
@@ -39,11 +48,17 @@
 			<span class="text-sm text-muted-foreground text-start">
 				{item.quantity} @ ${item.unitPrice?.toFixed?.(2)}
 			</span>
-		</div>
+		</Button>
 	</Dialog.Trigger>
 	<Dialog.Content let:openStore on:load={console.error}>
 		{@const onEnter = () => itemValid && openStore.set(false)}
 		<Dialog.Header><Dialog.Title>Edit Item</Dialog.Title></Dialog.Header>
+		{#if !item.friends.length}
+			<Alert variant="destructive">
+				<Icon icon="mdi:error" class="text-xl" />
+				<AlertDescription>This item has not been assigned to anyone</AlertDescription>
+			</Alert>
+		{/if}
 		<Tabs value="item">
 			<TabsList class="w-full [&>*]:flex-grow">
 				<TabsTrigger value="item">Item</TabsTrigger>
