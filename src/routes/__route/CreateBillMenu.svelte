@@ -52,7 +52,7 @@
 							type="file"
 							accept="image/*"
 							class="hidden"
-							{capture}
+							capture={capture || undefined}
 							on:change={(e) => console.log(e.currentTarget.form?.requestSubmit())}
 						/>
 					</Form.Field>
