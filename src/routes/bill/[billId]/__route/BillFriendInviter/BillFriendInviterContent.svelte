@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Alert, AlertDescription } from '$lib/components/ui/alert';
-import { Button } from '$lib/components/ui/button';
+	import { Button } from '$lib/components/ui/button';
 	import Label from '$lib/components/ui/label/label.svelte';
 	import QrCodeComponent from '$lib/components/ui/qrcode/QrCodeComponent.svelte';
 	import Switch from '$lib/components/ui/switch/switch.svelte';
@@ -8,6 +8,7 @@ import { Button } from '$lib/components/ui/button';
 	import Icon from '@iconify/svelte';
 	import { onMount } from 'svelte';
 	import type { z } from 'zod';
+	import { linkStore } from './linkStores';
 
 	export let billId: string;
 
@@ -16,25 +17,29 @@ import { Button } from '$lib/components/ui/button';
 	let billSplitUrl: Promise<string>;
 	let billInviteUrl: Promise<string>;
 	$: urlPromise = useSplitUrl ? billSplitUrl : billInviteUrl;
-    async function fetchUrl(action: 'split' | 'invite') {
-        const payload: z.infer<typeof CreateInviteLinkSchema> = {
-            action,
-            billId
-        }
-        console.log('fetching', payload);
-        const response = await fetch('/api/invite/create', {method: 'POST', body: JSON.stringify(payload)});
-        if(response.status !== 200) {
-            throw Error("Error generating link")
-        }
-        const {shortInviteLink} = await response.json();
-        console.log(action, 'link', shortInviteLink);
-        return shortInviteLink;
-    }
-    $: if(useSplitUrl && !billSplitUrl) {
-        billSplitUrl = fetchUrl('split');
-    } else if(!billInviteUrl) {
-        billInviteUrl = fetchUrl('invite');
-    }
+	async function fetchUrl(action: 'split' | 'invite') {
+		if ($linkStore[action]) return $linkStore[action];
+
+		const payload: z.infer<typeof CreateInviteLinkSchema> = {
+			action,
+			billId
+		};
+		const response = await fetch('/api/invite/create', {
+			method: 'POST',
+			body: JSON.stringify(payload)
+		});
+		if (response.status !== 200) {
+			throw Error('Error generating link');
+		}
+		const { shortInviteLink } = await response.json();
+		$linkStore[action] = shortInviteLink;
+		return shortInviteLink;
+	}
+	$: if (useSplitUrl && !billSplitUrl) {
+		billSplitUrl = fetchUrl('split');
+	} else if (!billInviteUrl) {
+		billInviteUrl = fetchUrl('invite');
+	}
 
 	function handleCopy(url: string) {
 		if (typeof navigator !== 'undefined') navigator?.clipboard?.writeText?.(url);
@@ -85,12 +90,10 @@ import { Button } from '$lib/components/ui/button';
 				{url}
 			</span>
 		</div>
-    {:catch}
-        <Alert variant="destructive">
-            <Icon icon="mdi:error"/>
-            <AlertDescription>
-                Error generating link
-            </AlertDescription>
-        </Alert>
+	{:catch}
+		<Alert variant="destructive">
+			<Icon icon="mdi:error" />
+			<AlertDescription>Error generating link</AlertDescription>
+		</Alert>
 	{/await}
 </div>
