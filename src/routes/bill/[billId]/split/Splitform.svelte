@@ -14,6 +14,13 @@
 	import VenmoPersonRow, { formatVenmo } from '../__route/VenmoPersonRow.svelte';
 	import { SplitBillSchema } from './__route/splitForm';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
+	import {
+		Card,
+		CardContent,
+		CardDescription,
+		CardHeader,
+		CardTitle
+	} from '$lib/components/ui/card';
 
 	export let bill: z.input<typeof BillSchema>;
 
@@ -26,6 +33,13 @@
 	$: $form.items = bill.items.map(
 		(x) => !!x.friends.find((fr) => fr.venmo === formatVenmo($venmo))
 	);
+	$: subtotal = bill.items
+		.map((item) => item.total)
+		.filter((_, i) => $form.items[i])
+		.reduce((total, itemTotal) => total + itemTotal, 0);
+	$: tax = (bill.tax ?? 0) * (subtotal / bill.subtotal);
+	$: tip = (bill.tip ?? 0) * (subtotal / bill.subtotal);
+	$: total = subtotal + tax + tip;
 </script>
 
 <div class="flex flex-col py-4 gap-2">
@@ -72,6 +86,29 @@
 			<Separator class="last:hidden" />
 		{/each}
 	</div>
+
+	<Card class="bg-transparent">
+		<CardHeader>
+			<CardTitle>Estimated Cost</CardTitle>
+			<CardDescription>
+				Note that this is not the final number and is subject to change. For example, it doesn't
+				account for splitting an item between multiple people. Also, tax/tip might not be finalized
+				at this point.
+			</CardDescription>
+		</CardHeader>
+		<CardContent
+			class="grid grid-cols-[1fr_auto] [&>span:nth-child(even)]:text-right [&>span:nth-child(even)]:font-bold"
+		>
+			<span>Subtotal</span>
+			<span>${subtotal.toFixed(2)}</span>
+			<span>Tax</span>
+			<span>${tax.toFixed(2)}</span>
+			<span>Tip</span>
+			<span>${tip.toFixed(2)}</span>
+			<span class="mt-2">Total</span>
+			<span class="mt-2">${total.toFixed(2)}</span>
+		</CardContent>
+	</Card>
 
 	<FormButton disabled={!validVenmo}>Submit</FormButton>
 </div>
