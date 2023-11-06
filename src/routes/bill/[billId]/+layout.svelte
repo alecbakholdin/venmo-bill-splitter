@@ -9,3 +9,5 @@
 		<title>{bill.title}</title>
 	{/if}
 </svelte:head>
+
+<slot/>
