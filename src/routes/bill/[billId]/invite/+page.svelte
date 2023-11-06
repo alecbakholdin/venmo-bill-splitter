@@ -7,10 +7,9 @@
 		FormLabel,
 		FormValidation
 	} from '$lib/components/ui/form';
-	import { get } from 'svelte/store';
+	import { localStorageStore } from '$lib/localStorageStore';
 	import VenmoPersonRow from '../__route/VenmoPersonRow.svelte';
 	import { InviteSchema } from './__route/inviteForm.js';
-	import { localStorageStore } from '$lib/localStorageStore';
 
 	export let data;
 
@@ -18,6 +17,11 @@
 	data.inviteForm.data.venmo = $venmo;
 	let valid = false;
 </script>
+
+<svelte:head>
+	<meta property="og:title" content={data.bill.title} />
+	<meta property="og:description" content="You've been invited to join {data.bill.title}" />
+</svelte:head>
 
 <div class="h-10" />
 <span class="text-muted-foreground text-sm">You've been invited to</span>

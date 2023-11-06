@@ -8,6 +8,12 @@
 	export let data;
 </script>
 
+
+<svelte:head>
+	<meta property="og:title" content={data.bill.title}>
+	<meta property="og:description" content="You've been invited to join {data.bill.title}">
+</svelte:head>
+
 <div class="h-10" />
 <span class="text-muted-foreground text-sm">You've been invited to</span>
 <p class="text-xl font-bold">{data.bill.title}</p>

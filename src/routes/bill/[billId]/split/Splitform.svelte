@@ -92,8 +92,8 @@
 			<CardTitle>Estimated Cost</CardTitle>
 			<CardDescription>
 				Note that this is not the final number and is subject to change. For example, it doesn't
-				account for splitting an item between multiple people. Also, tax/tip might not be finalized
-				at this point.
+				account for splitting an item between multiple people. No request will be made until all
+				totals are finalized.
 			</CardDescription>
 		</CardHeader>
 		<CardContent
