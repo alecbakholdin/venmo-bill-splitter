@@ -3,6 +3,16 @@
 
 	import * as Card from '$lib/components/ui/card';
 	import { Skeleton } from '$lib/components/ui/skeleton';
+	import {
+		DropdownMenu,
+		DropdownMenuContent,
+		DropdownMenuItem,
+		DropdownMenuTrigger
+	} from '$lib/components/ui/dropdown-menu';
+	import Button from '$lib/components/ui/button/button.svelte';
+	import Icon from '@iconify/svelte';
+	import { signOut } from '@auth/sveltekit/client';
+	import { goto } from '$app/navigation';
 
 	export let data;
 
@@ -10,11 +20,34 @@
 </script>
 
 <Card.Root class="bg-muted rounded-t-none">
-	<Card.Header>
+	<Card.Header class="relative">
 		<Card.Title>
 			<p class="text-sm text-muted-foreground">Hello, {firstName}!</p>
 			<p class="text-3xl">Split a Bill</p>
 		</Card.Title>
+		<DropdownMenu>
+			<DropdownMenuTrigger asChild let:builder>
+				<Button
+					builders={[builder]}
+					type="button"
+					variant="ghost"
+					size="icon"
+					class="w-8 h-8 absolute top-5 right-5"
+				>
+					<Icon icon="pepicons-pencil:dots-y" class="text-xl" />
+				</Button>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent>
+				<DropdownMenuItem
+					on:click={async () => {
+						await signOut();
+						await goto('/login');
+					}}
+				>
+					Sign Out
+				</DropdownMenuItem>
+			</DropdownMenuContent>
+		</DropdownMenu>
 	</Card.Header>
 	<Card.Content>
 		<Card.Root class="pt-8 pb-4 px-3 bg-primary">
