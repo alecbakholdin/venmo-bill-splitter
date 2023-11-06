@@ -12,6 +12,7 @@
 	import BillItemRow from './__route/BillItemRow.svelte';
 	import BillTitle from './__route/BillTitle.svelte';
 	import PercentAmountEditor from './__route/PercentAmountEditor.svelte';
+	import BillExtraActions from './__route/BillExtraActions.svelte';
 
 	export let data;
 </script>
@@ -42,6 +43,7 @@
 						{new Date(data.bill.dateCreated).toLocaleDateString()}
 					</p>
 				</div>
+				<BillExtraActions />
 			</Card.Title>
 		</Card.Header>
 		<Card.Content>
