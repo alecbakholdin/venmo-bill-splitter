@@ -38,7 +38,7 @@
 			<a href="/bill/{bill.slug}" class="grid grid-cols-[1fr_auto] rounded-lg bg-muted p-2">
 				<span class="font-bold">{bill.title}</span>
 				<span class="font-bold place-self-end">${bill.total?.toFixed(2)}</span>
-				<span class="text-muted-foreground">{bill.dateCreated}</span>
+				<span class="text-muted-foreground">{new Date(bill.dateCreated).toLocaleDateString()}</span>
 				<span class="text-muted-foreground place-self-end">{bill.items.length || 'No'} items</span>
 			</a>
 		{:else}

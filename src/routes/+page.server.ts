@@ -44,7 +44,7 @@ export const actions = {
 		const { email } = await getUser(locals);
 		const numBills = (await billCollection.where('user', '==', email).count().get()).data().count;
 		const bill = {
-			dateCreated: new Date().toLocaleDateString(),
+			dateCreated: new Date().toUTCString(),
 			items: [],
 			title: `Bill ${numBills + 1}`,
 			slug: '',

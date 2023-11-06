@@ -35,7 +35,9 @@
 			<Card.Title class="flex items-center gap-2">
 				<div class="flex-grow">
 					<BillTitle />
-					<p class="text-muted-foreground text-md font-thin">{data.bill.dateCreated}</p>
+					<p class="text-muted-foreground text-md font-thin">
+						{new Date(data.bill.dateCreated).toLocaleDateString()}
+					</p>
 				</div>
 			</Card.Title>
 		</Card.Header>
