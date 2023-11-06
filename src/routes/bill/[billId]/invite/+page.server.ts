@@ -2,7 +2,7 @@ import { BillSchema } from '$lib/firestore/schemas/Bill.js';
 import { fail, redirect } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/server';
 import { formatVenmo } from '../__route/VenmoPersonRow.svelte';
-import { getBillFromJwt } from '../__route/inviteAuth.server.js';
+import { getBillFromJwt } from '../../../../lib/types/inviteAuth.server.js';
 import { InviteSchema } from './__route/inviteForm.js';
 
 export async function load({ url, params }) {

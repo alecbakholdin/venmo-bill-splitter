@@ -6,12 +6,18 @@ import { redirect, type Handle } from '@sveltejs/kit';
 import { FirestoreAdapter } from '@auth/firebase-adapter';
 import { firestore } from '$lib/firebase.server';
 
-const anonPaths = ['/login', '/api/venmo/u', '/bill/[billId]/invite', '/bill/[billId]/split'] as const;
+const anonPaths = [
+	'/login',
+	'/api/venmo/u',
+	'/bill/[billId]/invite',
+	'/bill/[billId]/split',
+	'/invite'
+] as const;
 
 function isAnonPathId(path: string | null) {
-	if(!path) return false;
-	for(const anonPath of anonPaths) {
-		if(path.startsWith(anonPath)) return true;
+	if (!path) return false;
+	for (const anonPath of anonPaths) {
+		if (path.startsWith(anonPath)) return true;
 	}
 	return false;
 }
