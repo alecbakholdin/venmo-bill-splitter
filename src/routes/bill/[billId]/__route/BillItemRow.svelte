@@ -5,8 +5,8 @@
 		FormField,
 		FormInput,
 		FormLabel,
-		FormValidation,
-		FormSwitch
+		FormSwitch,
+		FormValidation
 	} from '$lib/components/ui/form';
 	import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
 	import { BillItemSchema, BillSchema } from '$lib/firestore/schemas/Bill';
@@ -132,9 +132,6 @@
 			</TabsContent>
 		</Tabs>
 		<Dialog.Footer class="gap-1">
-			<Dialog.Close disabled={!itemValid} class={cn(buttonVariants({ variant: 'outline' }))}>
-				Close
-			</Dialog.Close>
 			<Dialog.Close
 				class={cn(buttonVariants({ variant: 'destructive' }))}
 				on:click={() =>
@@ -148,6 +145,9 @@
 					)}
 			>
 				Delete
+			</Dialog.Close>
+			<Dialog.Close disabled={!itemValid} class={cn(buttonVariants({ variant: 'outline' }))}>
+				Close
 			</Dialog.Close>
 		</Dialog.Footer>
 	</Dialog.Content>

@@ -2,6 +2,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as Form from '$lib/components/ui/form';
+	import { Separator } from '$lib/components/ui/separator';
 	import { BillSchema } from '$lib/firestore/schemas/Bill';
 	import Icon from '@iconify/svelte';
 	import { slide } from 'svelte/transition';
@@ -10,6 +11,7 @@
 	import BillFriendRow from './__route/BillFriendRow.svelte';
 	import BillItemRow from './__route/BillItemRow.svelte';
 	import BillTitle from './__route/BillTitle.svelte';
+	import PercentAmountEditor from './__route/PercentAmountEditor.svelte';
 
 	export let data;
 </script>
@@ -30,6 +32,7 @@
 	let:formStore
 	let:tainted
 >
+	{@const taxOrTip = formValues.tax !== undefined || formValues.tip !== undefined}
 	<Card.Root class="rounded-lg mx-2 sm:mx-0">
 		<Card.Header>
 			<Card.Title class="flex items-center gap-2">
@@ -42,27 +45,17 @@
 			</Card.Title>
 		</Card.Header>
 		<Card.Content>
-			<div class="flex w-full">
-				<span class="flex-grow">Subtotal</span>
-				<span>${formValues.subtotal.toFixed(2)}</span>
-			</div>
-			{#if formValues.tax !== undefined}
-				<Form.Field {config} name="tax">
-					<Form.Label>Tax</Form.Label>
-					<Form.Input type="number" inputmode="numeric" placeholder="Tax" step="0.01" />
-					<Form.Validation />
-				</Form.Field>
+			{#if taxOrTip}
+				<div class="flex w-full pr-8">
+					<span class="flex-grow">Subtotal</span>
+					<span class="font-bold">${formValues.subtotal.toFixed(2)}</span>
+				</div>
+				<PercentAmountEditor taxOrTip="tax" />
+				<PercentAmountEditor taxOrTip="tip" />
 			{/if}
-			{#if formValues.tip !== undefined}
-				<Form.Field {config} name="tip">
-					<Form.Label>Tip</Form.Label>
-					<Form.Input type="number" inputmode="numeric" placeholder="Tip" step="0.01" />
-					<Form.Validation />
-				</Form.Field>
-			{/if}
-			<div class="flex w-full">
+			<div class="flex w-full" class:pr-8={taxOrTip}>
 				<span class="flex-grow">Total</span>
-				<span>${formValues.total.toFixed(2)}</span>
+				<span class="font-bold">${formValues.total.toFixed(2)}</span>
 			</div>
 		</Card.Content>
 	</Card.Root>

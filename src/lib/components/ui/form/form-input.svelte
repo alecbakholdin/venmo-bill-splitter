@@ -4,7 +4,7 @@
 	import type { HTMLInputAttributes } from 'svelte/elements';
 	import { numberProxy } from 'sveltekit-superforms/client';
 
-	type $$Props = HTMLInputAttributes;
+	type $$Props = HTMLInputAttributes & {leadIcon?: string};
 	type $$Events = InputEvents;
 
 	export let type: $$Props['type'] = 'text';

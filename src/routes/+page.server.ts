@@ -83,5 +83,4 @@ async function parseReceipt(receipt: Blob, bill: z.infer<typeof BillSchema>) {
 		bill.tax = (docFields.TotalTax as any)?.value ?? 0;
 		bill.tip = (docFields.TotalTip as any)?.value ?? 0;
 	}
-	console.log(JSON.stringify(bill));
 }
