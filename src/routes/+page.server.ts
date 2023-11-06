@@ -55,7 +55,10 @@ export const actions = {
 		} satisfies z.infer<typeof BillSchema>;
 
 		// parse receipt if possible
-		const file = formData.get('receiptFile') ?? formData.get('receiptPicture');
+		const receiptFile = formData.get('receiptFile') as Blob;
+		const receiptPicture = formData.get('receiptPicture') as Blob;
+		const file = receiptFile.size ? receiptFile : receiptPicture.size ? receiptPicture : null;
+		console.log('file', file);
 		if (file instanceof Blob) await parseReceipt(file, bill);
 
 		// finish creating bill and redirect user to bill
