@@ -1,5 +1,10 @@
 import { z } from 'zod';
-import { VenmoSchema } from './Venmo';
+
+export const BillItemFriendSchema = z.object({
+	email: z.string().email().toLowerCase(),
+	splitValue: z.number().positive().default(1),
+	totalOwed: z.number().default(0)
+});
 
 export const BillItemSchema = z
 	.object({
@@ -9,13 +14,7 @@ export const BillItemSchema = z
 		total: z.number().nonnegative(),
 		splitType: z.enum(['shares']),
 		addNewFriends: z.boolean().optional(),
-		friends: z.array(
-			z.object({
-				venmo: VenmoSchema,
-				splitValue: z.number().positive(),
-				totalOwed: z.number()
-			})
-		)
+		friends: z.array(BillItemFriendSchema)
 	})
 	.transform((billItem) => {
 		if (billItem.splitType !== 'shares') throw Error('Unexpected splitType');
@@ -34,20 +33,22 @@ export const BillItemSchema = z
 	});
 
 export const BillFriendSchema = z.object({
-	venmo: VenmoSchema,
-	items: z.array(
-		z.object({
-			title: z.string(),
-			totalOwed: z.number()
-		})
-	),
-	subtotal: z.number(),
-	total: z.number()
+	email: z.string().email().toLowerCase().default(''),
+	items: z
+		.array(
+			z.object({
+				title: z.string(),
+				totalOwed: z.number()
+			})
+		)
+		.default([]),
+	subtotal: z.number().default(0),
+	total: z.number().default(0)
 });
 
 export const BillSchema = z
 	.object({
-		user: z.string().email(),
+		user: z.string().email().toLowerCase(),
 		title: z.string(),
 		slug: z.string(),
 		dateCreated: z.string(),
@@ -76,17 +77,17 @@ export const BillSchema = z
 			total,
 			friends: values.friends.map((friend) => {
 				const items = values.items.filter((item) =>
-					item.friends.find((fr) => fr.venmo === friend.venmo)
+					item.friends.find((fr) => fr.email === friend.email)
 				);
 				const friendSubtotal = values.items
-					.flatMap((item) => item.friends.filter((itemFriend) => itemFriend.venmo === friend.venmo))
+					.flatMap((item) => item.friends.filter((itemFriend) => itemFriend.email === friend.email))
 					.reduce((total, { totalOwed }) => total + totalOwed, 0);
 				const friendTotal = friendSubtotal + (friendSubtotal / subtotal) * (tax + tip);
 				return {
 					...friend,
 					items: items.map((item) => ({
 						title: item.title,
-						totalOwed: item.friends.find((fr) => fr.venmo === friend.venmo)!.totalOwed
+						totalOwed: item.friends.find((fr) => fr.email === friend.email)!.totalOwed
 					})),
 					subtotal: friendSubtotal,
 					total: friendTotal

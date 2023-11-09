@@ -19,6 +19,7 @@
 	import VenmoPersonRow from './VenmoPersonRow.svelte';
 	import { Alert } from '$lib/components/ui/alert';
 	import AlertDescription from '$lib/components/ui/alert/alert-description.svelte';
+	import { Friend } from '$lib/components/ui/friend';
 
 	type T = z.input<typeof BillItemSchema>;
 	export let i: number;
@@ -106,12 +107,12 @@
 						<BillItemFriendAdder {item} {i} />
 					</div>
 					<div class="flex flex-col gap-4">
-						{#each item.friends as friend, friendI (friend.venmo)}
+						{#each item.friends as friend, friendI (friend.email)}
 							<div>
 								<FormField {config} name="items[{i}].friends[{friendI}].splitValue">
 									<div class="flex items-center gap-1" transition:slide>
 										<div class="flex-grow">
-											<VenmoPersonRow venmo={friend.venmo} />
+											<Friend email={friend.email} />
 										</div>
 										<FormInput
 											type="number"
@@ -124,7 +125,8 @@
 											<Button
 												type="button"
 												size="icon"
-												class="w-4 apect-square"
+												variant="secondary"
+												class="h-6 w-6"
 												on:click={() => {
 													form.update(($form) => {
 														$form.items[i].friends.splice(friendI, 1);

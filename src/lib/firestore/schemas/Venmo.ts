@@ -2,10 +2,9 @@ import { z } from 'zod';
 
 export const VenmoSchema = z
 	.string()
-	.min(5)
 	.max(30)
 	.toLowerCase()
-	.regex(/^@?[a-z-_\d]+$/);
+	.regex(/^@?[a-z-_\d]*$/);
 
 export const VenmoPersonSchema = z.object({
 	venmo: VenmoSchema,

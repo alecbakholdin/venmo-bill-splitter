@@ -18,8 +18,8 @@ export const actions = {
 
         const bill = await getBillFromJwt(url.searchParams.get('auth'), params.billId, 'invite');
         const billData = bill.data();
-        if(!billData.friends.find(x => x.venmo === venmo)) {
-            billData.friends.push({venmo, total: 0, subtotal: 0, items: []});
+        if(!billData.friends.find(x => x.email === venmo)) {
+            billData.friends.push({email: venmo, total: 0, subtotal: 0, items: []});
             const newBill = BillSchema.parse(billData);
             await bill.ref.set(newBill);
         }

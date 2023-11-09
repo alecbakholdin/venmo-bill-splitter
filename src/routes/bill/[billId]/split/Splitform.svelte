@@ -24,14 +24,16 @@
 
 	export let bill: z.input<typeof BillSchema>;
 
-	const venmo = localStorageStore('inviteVenmo', '');
-	let validVenmo = false;
 	const formContext = getForm<z.ZodEffects<typeof SplitBillSchema>>();
-	$: ({ form } = formContext);
 	const config = { form: formContext, schema: SplitBillSchema };
+	$: ({ form } = formContext);
+	const venmo = localStorageStore('inviteVenmo', '');
 	$: $form.venmo = $venmo;
+	/* const email = localStorageStore('inviteEmail', '');
+	$: $form.email = $email; */
+
 	$: $form.items = bill.items.map(
-		(x) => !!x.friends.find((fr) => fr.venmo === formatVenmo($venmo))
+		(x) => !!x.friends.find((fr) => fr.email === formatVenmo($venmo))
 	);
 	$: subtotal = bill.items
 		.map((item) => item.total)
@@ -43,19 +45,28 @@
 </script>
 
 <div class="flex flex-col py-4 gap-2">
-	<FormField {config} name="venmo">
-		<FormLabel>Venmo</FormLabel>
-		<div class="relative">
-			<span class="absolute text-muted-foreground left-2 top-1/2 -translate-y-1/2">@</span>
-			<FormInput
-				class="pl-7"
-				placeholder="Venmo"
-				on:input={(e) => venmo.set(e.currentTarget.value)}
-			/>
-		</div>
+	<FormField {config} name="email">
+		<FormLabel aria-required="true">Email</FormLabel>
+		<FormInput
+			type="email"
+			placeholder="email@example.com"
+			autocomplete="email"
+			required
+		/>
 		<FormValidation />
 	</FormField>
-	<VenmoPersonRow venmo={$form.venmo} bind:valid={validVenmo} />
+	<FormField {config} name="venmo">
+		<FormLabel>Venmo (optional)</FormLabel>
+		<FormInput
+			leadIcon="mdi:at"
+			class="pl-7"
+			placeholder="Venmo"
+			required={false}
+			on:input={(e) => venmo.set(e.currentTarget.value)}
+		/>
+		<FormValidation />
+	</FormField>
+	<!-- <VenmoPersonRow venmo={$form.venmo} /> -->
 	<div class="text-lg font-bold">Items</div>
 	<p class="text-muted-foreground text-sm pb-2">
 		Select the items that you are responsible for. If you split an item with another person, both of
@@ -110,5 +121,5 @@
 		</CardContent>
 	</Card>
 
-	<FormButton disabled={!validVenmo}>Submit</FormButton>
+	<FormButton disabled={!$form.email}>Submit</FormButton>
 </div>

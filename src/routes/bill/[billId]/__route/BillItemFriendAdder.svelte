@@ -10,21 +10,21 @@
 		DialogTitle,
 		DialogTrigger
 	} from '$lib/components/ui/dialog';
+	import { Friend } from '$lib/components/ui/friend';
 	import { BillSchema, type BillItemSchema } from '$lib/firestore/schemas/Bill';
 	import { cn } from '$lib/utils';
-	import { getForm } from 'formsnap';
-	import type { z } from 'zod';
-	import VenmoPersonRow from './VenmoPersonRow.svelte';
-	import { writable } from 'svelte/store';
 	import Icon from '@iconify/svelte';
+	import { getForm } from 'formsnap';
+	import { writable } from 'svelte/store';
+	import type { z } from 'zod';
 
-	export let item: z.infer<typeof BillItemSchema>;
+	export let item: z.input<typeof BillItemSchema>;
 	export let i: number;
 
 	const formContext = getForm<z.ZodEffects<typeof BillSchema>>();
 	$: ({ form } = formContext);
-	$: itemFriends = item.friends.map((x) => x.venmo);
-	$: availableFriends = $form.friends.filter((friend) => !itemFriends.includes(friend.venmo));
+	$: itemFriends = item.friends.map((x) => x.email);
+	$: availableFriends = $form.friends.filter((friend) => !itemFriends.includes(friend.email));
 	const selected = writable<boolean[]>([]);
 	$: {
 		selected.set(availableFriends.map((_) => false));
@@ -33,11 +33,11 @@
 
 <Dialog>
 	<DialogTrigger
-        disabled={!availableFriends.length}
+		disabled={!availableFriends.length}
 		class={cn(buttonVariants({ variant: 'ghost', class: 'w-fit' }))}
 		on:click={() => selected.update(($s) => $s.map((_) => false))}
 	>
-		<Icon icon="mdi:people-add" class="text-2xl"/>
+		<Icon icon="mdi:people-add" class="text-2xl" />
 	</DialogTrigger>
 	<DialogContent>
 		<DialogHeader>
@@ -47,7 +47,7 @@
 			{@const id = `item-friend-adder-${idx}`}
 			<label for={id} class="flex items-center gap-2">
 				<Checkbox {id} bind:checked={$selected[idx]} />
-				<VenmoPersonRow venmo={friend.venmo} />
+				<Friend email={friend.email} />
 			</label>
 		{/each}
 		<DialogFooter class="gap-2">
@@ -58,7 +58,7 @@
 					const addedFriends = availableFriends.filter((_, idx) => $selected[idx]);
 					form.update(($form) => {
 						$form.items[i].friends.push(
-							...addedFriends.map((x) => ({ totalOwed: 0, splitValue: 1, venmo: x.venmo }))
+							...addedFriends.map((x) => ({ totalOwed: 0, splitValue: 1, email: x.email }))
 						);
 						return BillSchema.parse($form);
 					});

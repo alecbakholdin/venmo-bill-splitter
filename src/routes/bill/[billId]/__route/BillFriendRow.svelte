@@ -11,11 +11,11 @@
 	import DialogTitle from '$lib/components/ui/dialog/dialog-title.svelte';
 	import { FormField } from '$lib/components/ui/form';
 	import FormValidation from '$lib/components/ui/form/form-validation.svelte';
+	import { Friend } from '$lib/components/ui/friend';
 	import { BillSchema, type BillFriendSchema } from '$lib/firestore/schemas/Bill';
 	import { cn } from '$lib/utils';
 	import { getForm } from 'formsnap';
 	import type { z } from 'zod';
-	import VenmoPersonRow, { formatVenmo } from './VenmoPersonRow.svelte';
 
 	export let friend: z.infer<typeof BillFriendSchema>;
 	export let i: number;
@@ -28,11 +28,11 @@
 <Dialog>
 	<DialogTrigger class={cn(buttonVariants({ variant: 'ghost', class: 'w-full' }))}>
 		<div class="grid grid-cols-[1fr_auto] max-w-full w-full">
-			<VenmoPersonRow venmo={friend.venmo} />
+			<Friend email={friend.email} />
 			<span class="font-bold place-self-center">
 				${friend.total.toFixed(2)}
 			</span>
-			<FormField {config} name="friends[{i}].venmo">
+			<FormField {config} name="friends[{i}].email">
 				<FormValidation />
 			</FormField>
 		</div>
@@ -42,7 +42,7 @@
 			<DialogTitle>Edit Person</DialogTitle>
 		</DialogHeader>
 
-		<VenmoPersonRow venmo={friend.venmo} />
+		<Friend email={friend.email} />
 		<div class="flex flex-col">
 			{#each friend.items ?? [] as item}
 				<div class="w-full flex justify-between">
@@ -73,9 +73,7 @@
 							form.update(($form) => {
 								$form.friends = $form.friends.filter((_, idx) => idx !== i);
 								for (const item of $form.items) {
-									item.friends = item.friends.filter(
-										({ venmo }) => venmo !== formatVenmo(friend.venmo)
-									);
+									item.friends = item.friends.filter(({ email }) => email !== friend.email);
 								}
 								return $form;
 							}),

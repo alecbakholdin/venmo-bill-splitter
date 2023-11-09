@@ -12,6 +12,7 @@
 	import BillItemRow from './__route/BillItemRow.svelte';
 	import BillTitle from './__route/BillTitle.svelte';
 	import PercentAmountEditor from './__route/PercentAmountEditor.svelte';
+	import { page } from '$app/stores';
 
 	export let data;
 </script>
@@ -102,12 +103,12 @@
 	<Card.Root class="rounded-lg mx-2 sm:mx-0 mt-4">
 		<Card.Header class="relative">
 			<Card.Title>People</Card.Title>
-			<div class="absolute top-4 right-8">
-				<BillFriendInviter billId={data.bill.slug}/>
+			<div class="absolute top-4 right-8 flex gap-1 items-center">
+				<BillFriendInviter billId={data.bill.slug} />
 			</div>
 		</Card.Header>
 		<Card.Content>
-			{#each formValues.friends as friend, i (friend.venmo)}
+			{#each formValues.friends as friend, i (friend.email)}
 				<div class="w-full" transition:slide>
 					<BillFriendRow {friend} {i} />
 				</div>

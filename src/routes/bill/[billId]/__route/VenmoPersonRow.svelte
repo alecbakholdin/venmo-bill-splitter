@@ -9,11 +9,11 @@
 	const venmoCache = writable<Record<string, z.infer<typeof VenmoPersonSchema>>>({});
 	const venmoErrorCache = writable<string[]>([]);
 
-	export function formatVenmo(venmo?: string) {
+	export function formatVenmo(venmo: string | null | undefined) {
 		return venmo?.toLowerCase().replaceAll(/[^a-z0-9-_]/g, '') ?? '';
 	}
 
-	async function fetchVenmo(venmo?: string) {
+	async function fetchVenmo(venmo: string | null | undefined) {
 		if (typeof window === 'undefined') return undefined;
 		const iVenmo = formatVenmo(venmo);
 
@@ -35,11 +35,11 @@
 </script>
 
 <script lang="ts">
-	export let venmo: string;
+	export let venmo: string | null | undefined;
 	export let valid: boolean = false;
 	export let venmoPerson: z.infer<typeof VenmoPersonSchema> | undefined = undefined;
 
-	async function update(venmo?: string) {
+	async function update(venmo: string | null | undefined) {
 		valid = false;
 		venmoPerson = undefined;
 
@@ -52,7 +52,7 @@
 	}
 
 	// debounced update venmo
-	const venmoStore = writable<string | undefined>(venmo);
+	const venmoStore = writable<string | null | undefined>(venmo);
 	$: {
 		venmoStore.set(venmo);
 		valid = false;

@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { buttonVariants } from '$lib/components/ui/button';
+	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import {
 		Dialog,
-		DialogClose,
 		DialogContent,
 		DialogFooter,
 		DialogTitle,
@@ -10,18 +9,50 @@
 	} from '$lib/components/ui/dialog';
 	import DialogHeader from '$lib/components/ui/dialog/dialog-header.svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
-	import { BillFriendSchema, BillSchema } from '$lib/firestore/schemas/Bill';
+	import Label from '$lib/components/ui/label/label.svelte';
+	import { Tabs } from '$lib/components/ui/tabs';
+	import { BillFriendSchema, BillItemFriendSchema, BillSchema } from '$lib/firestore/schemas/Bill';
 	import { cn, getDefaults } from '$lib/utils';
 	import Icon from '@iconify/svelte';
 	import { getForm } from 'formsnap';
+	import type { Writable } from 'svelte/store';
 	import type { z } from 'zod';
-	import VenmoPersonRow, { formatVenmo } from './VenmoPersonRow.svelte';
+	import VenmoPersonRow from './VenmoPersonRow.svelte';
+	import { createFried as createFriend } from '$lib/components/ui/friend/friend.svelte';
+	import { FriendSchema } from '$lib/firestore/schemas/Friend';
 
-	const form = getForm<z.ZodEffects<typeof BillSchema>>();
-	/* const config = { form, schema: BillSchema }; */
+	const billForm = getForm<z.ZodEffects<typeof BillSchema>>();
+	const config = { form: billForm, schema: BillSchema };
 
+	let email: string = '';
 	let venmo: string = '';
-	let valid = false;
+	let validVenmo = false;
+	const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+	let loading = false;
+	$: invalidForm = loading || !email.match(emailRegex) || !!(venmo && !validVenmo);
+
+	async function handleAddPerson(openStore: Writable<boolean>) {
+		if (invalidForm) return;
+		loading = true;
+		try {
+			const friend = await createFriend({ ...getDefaults(FriendSchema), email, venmo });
+			if (friend) {
+				const { email } = friend;
+				billForm.form.update(($form) => {
+					if($form.friends.find(fr => fr.email === email)) return $form;
+					$form.friends.push({ ...getDefaults(BillFriendSchema), email });
+					$form.items.forEach(
+						(item) =>
+							item.addNewFriends &&
+							item.friends.push({ ...getDefaults(BillItemFriendSchema), email })
+					);
+					return $form;
+				});
+			}
+		} finally {
+			loading = false;
+		}
+	}
 </script>
 
 <Dialog>
@@ -31,46 +62,22 @@
 	</DialogTrigger>
 	<DialogContent let:openStore>
 		<DialogHeader><DialogTitle>Add Person</DialogTitle></DialogHeader>
-		<div class="relative">
-			<span class="absolute text-muted-foreground left-2 top-1/2 -translate-y-1/2">@</span>
-			<Input
-				class="pl-7"
-				placeholder="Venmo"
-				bind:value={venmo}
-				on:enter={() => valid && openStore.set(false)}
-			/>
-		</div>
-		<VenmoPersonRow {venmo} bind:valid />
+
+		<Tabs />
+		<Label for="createFfEmail">Email</Label>
+		<Input id="createFriendEmail" type="email" placeholder="email@example.com" bind:value={email} />
+
+		<Label for="createFriendVenmo">Venmo (optional)</Label>
+		<Input id="createFriendVenmo" leadIcon="mdi:at" bind:value={venmo} />
+		{#if venmo}
+			<VenmoPersonRow {venmo} bind:valid={validVenmo} />
+		{/if}
+
 		<DialogFooter>
-			<DialogClose
-				disabled={!valid}
-				class={cn(buttonVariants({ class: 'w-full' }))}
-				on:click={() => {
-					form.form.update(($form) => {
-						if (!$form.friends.find((x) => x.venmo === formatVenmo(venmo))) {
-							console.log(getDefaults(BillFriendSchema))
-							$form.friends.push({
-								total: 0,
-								venmo,
-								items: [],
-								subtotal: 0
-							});
-						}
-						for (const item of $form.items) {
-							if (item.addNewFriends) {
-								item.friends.push({
-									venmo,
-									splitValue: 1,
-									totalOwed: 0
-								});
-							}
-						}
-						return BillSchema.parse($form);
-					});
-				}}
-			>
-				Create
-			</DialogClose>
+			<Button {loading} on:click={() => handleAddPerson(openStore)} disabled={invalidForm}>
+				<Icon icon="mdi:add" />
+				<span>Add</span>
+			</Button>
 		</DialogFooter>
 	</DialogContent>
 </Dialog>
