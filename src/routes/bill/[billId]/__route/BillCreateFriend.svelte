@@ -48,6 +48,7 @@
 					);
 					return $form;
 				});
+				openStore.set(false);
 			}
 		} finally {
 			loading = false;
