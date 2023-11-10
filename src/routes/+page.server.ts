@@ -71,16 +71,18 @@ export const actions = {
 async function parseReceipt(receipt: Blob, bill: z.infer<typeof BillSchema>) {
 	const poller = await receiptParserClient.beginAnalyzeDocument(
 		'prebuilt-receipt',
-		await receipt.arrayBuffer()
+		await receipt.arrayBuffer(),
 	);
 	const result = await poller.pollUntilDone();
 	const docFields = result?.documents?.[0]?.fields;
 	const {Items, ...fields} = docFields as any;
-	console.log(JSON.stringify(fields, null, 2));
+	printObj(result);
+	printObj(fields);
+	printObj(Items);
 	if (docFields) {
 		const items = (docFields.Items as any)?.values;
 		for (const { properties } of items) {
-			console.log(JSON.stringify(properties, null, 2));
+			printObj(properties);
 			const title: string = properties.Description?.value ?? 'Item';
 			const quantity: number = properties.Quantity?.value ?? 1;
 			const unitPrice: number =
@@ -90,4 +92,18 @@ async function parseReceipt(receipt: Blob, bill: z.infer<typeof BillSchema>) {
 		bill.tax = (docFields.TotalTax as any)?.value ?? 0;
 		bill.tip = (docFields.TotalTip as any)?.value ?? 0;
 	}
+}
+
+function printObj(obj: any) {
+	console.log(JSON.stringify(formatObject(obj), null, 2));
+}
+
+function formatObject(obj: any) {
+	if(!obj) return obj;
+	if(Array.isArray(obj) || typeof obj !== "object"){
+		return obj;
+	}
+	return Object.fromEntries(
+		Object.entries(obj).filter(([key]) => key !== 'boundingRegions').map(([key, value]) => [key, formatObj(value)])
+	)
 }
