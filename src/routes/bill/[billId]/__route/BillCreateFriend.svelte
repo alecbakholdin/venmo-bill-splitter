@@ -39,7 +39,7 @@
 			if (friend) {
 				const { email } = friend;
 				billForm.form.update(($form) => {
-					if($form.friends.find(fr => fr.email === email)) return $form;
+					if ($form.friends.find((fr) => fr.email === email)) return $form;
 					$form.friends.push({ ...getDefaults(BillFriendSchema), email });
 					$form.items.forEach(
 						(item) =>
@@ -62,20 +62,27 @@
 		<span>New Person</span>
 	</DialogTrigger>
 	<DialogContent let:openStore>
+		{@const handleSubmit = () => handleAddPerson(openStore)}
 		<DialogHeader><DialogTitle>Add Person</DialogTitle></DialogHeader>
 
 		<Tabs />
 		<Label for="createFfEmail">Email</Label>
-		<Input id="createFriendEmail" type="email" placeholder="email@example.com" bind:value={email} />
+		<Input
+			id="createFriendEmail"
+			type="email"
+			placeholder="email@example.com"
+			bind:value={email}
+			on:enter={handleSubmit}
+		/>
 
 		<Label for="createFriendVenmo">Venmo (optional)</Label>
-		<Input id="createFriendVenmo" leadIcon="mdi:at" bind:value={venmo} />
+		<Input id="createFriendVenmo" leadIcon="mdi:at" bind:value={venmo} on:enter={handleSubmit} />
 		{#if venmo}
 			<VenmoPersonRow {venmo} bind:valid={validVenmo} />
 		{/if}
 
 		<DialogFooter>
-			<Button {loading} on:click={() => handleAddPerson(openStore)} disabled={invalidForm}>
+			<Button {loading} on:click={handleSubmit} disabled={invalidForm}>
 				<Icon icon="mdi:add" />
 				<span>Add</span>
 			</Button>

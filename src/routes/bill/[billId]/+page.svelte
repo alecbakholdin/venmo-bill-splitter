@@ -22,13 +22,9 @@
 	form={data.editBillForm}
 	schema={BillSchema}
 	options={{
-		dataType: 'json',
-		onUpdate(update) {
-			update.form.data = BillSchema.parse(update.form.data);
-		}
+		dataType: 'json'
 	}}
 	action="?/editBill"
-	let:config
 	let:formValues
 	let:formStore
 	let:tainted
@@ -67,7 +63,7 @@
 		</Card.Header>
 		<Card.Content>
 			<div class="flex flex-col gap-1">
-				{#each formValues.items as item, i ((item.title, i))}
+				{#each formValues.items as item, i (`${item.title}-${i}`)}
 					<div class="w-full" transition:slide>
 						<BillItemRow {item} {i} />
 					</div>

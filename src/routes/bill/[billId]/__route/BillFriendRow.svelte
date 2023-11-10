@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { buttonVariants } from '$lib/components/ui/button';
+	import { Checkbox } from '$lib/components/ui/checkbox';
 	import {
 		Dialog,
 		DialogClose,
@@ -12,8 +13,14 @@
 	import { FormField } from '$lib/components/ui/form';
 	import FormValidation from '$lib/components/ui/form/form-validation.svelte';
 	import { Friend } from '$lib/components/ui/friend';
-	import { BillSchema, type BillFriendSchema } from '$lib/firestore/schemas/Bill';
-	import { cn } from '$lib/utils';
+	import Label from '$lib/components/ui/label/label.svelte';
+	import Separator from '$lib/components/ui/separator/separator.svelte';
+	import {
+		BillSchema,
+		type BillFriendSchema,
+		BillItemFriendSchema
+	} from '$lib/firestore/schemas/Bill';
+	import { cn, getDefaults } from '$lib/utils';
 	import { getForm } from 'formsnap';
 	import type { z } from 'zod';
 
@@ -44,13 +51,33 @@
 
 		<Friend email={friend.email} />
 		<div class="flex flex-col">
-			{#each friend.items ?? [] as item}
-				<div class="w-full flex justify-between">
+			{#each $form.items as item, i}
+				{@const checkboxId = `${friend.email}-item-${i}`}
+				{@const selected = !!item.friends.find((fr) => fr.email === friend.email)}
+				<Label for={checkboxId} class="grid grid-flow-col grid-cols-[auto_1fr_auto] gap-2">
+					<Checkbox
+						id={checkboxId}
+						checked={selected}
+						class="row-span-2 place-self-center"
+						on:click={() => {
+							if (selected) {
+								item.friends = item.friends.filter((fr) => fr.email !== friend.email);
+							} else {
+								item.friends = [
+									...item.friends,
+									{ ...getDefaults(BillItemFriendSchema), email: friend.email }
+								];
+							}
+							$form = BillSchema.parse($form);
+						}}
+					/>
 					<span>{item.title}</span>
-					<span class="font-bold">${item.totalOwed.toFixed(2)}</span>
-				</div>
+					<span class="text-muted-foreground">{item.quantity} @ ${item.unitPrice.toFixed(2)}</span>
+					<span class="font-bold row-span-full">${item.total.toFixed(2)}</span>
+				</Label>
+				<Separator class="last:hidden my-2" />
 			{:else}
-				<div class="text-muted-foreground">Friend is not assigned to any items</div>
+				<div class="text-muted-foreground">No items to assign</div>
 			{/each}
 		</div>
 		{#if friend.subtotal !== friend.total}

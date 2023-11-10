@@ -1,22 +1,25 @@
 <script lang="ts">
-	import { cn, flyAndScale } from "$lib/utils";
-	import { Dialog as DialogPrimitive } from "bits-ui";
-	import { X } from "lucide-svelte";
-	import { getContext } from "svelte";
-	import type { Writable } from "svelte/store";
-	import * as Dialog from ".";
+	import { cn, flyAndScale } from '$lib/utils';
+	import { Dialog as DialogPrimitive } from 'bits-ui';
+	import { X } from 'lucide-svelte';
+	import { createEventDispatcher, getContext } from 'svelte';
+	import type { Writable } from 'svelte/store';
+	import * as Dialog from '.';
 
 	type $$Props = DialogPrimitive.ContentProps;
 
-	let className: $$Props["class"] = undefined;
-	export let transition: $$Props["transition"] = flyAndScale;
-	export let transitionConfig: $$Props["transitionConfig"] = {
+	const dispatch = createEventDispatcher<{ close: void }>();
+
+	let className: $$Props['class'] = undefined;
+	export let transition: $$Props['transition'] = flyAndScale;
+	export let transitionConfig: $$Props['transitionConfig'] = {
 		duration: 200
 	};
 	export { className as class };
 
 	const dialogContext: any = getContext('dialog');
-	$: openStore = dialogContext?.states?.open as Writable<boolean>
+	$: openStore = dialogContext?.states?.open as Writable<boolean>;
+	$: openStore?.subscribe((open) => !open && dispatch('close'));
 </script>
 
 <Dialog.Portal>
@@ -25,7 +28,7 @@
 		{transition}
 		{transitionConfig}
 		class={cn(
-			"fixed left-[50%] top-[50%] z-50 grid w-full max-w-[95vw] sm:max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg rounded-lg md:w-full max-h-[90vh] overflow-y-auto",
+			'fixed left-[50%] top-[50%] z-50 grid w-full max-w-[95vw] sm:max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg rounded-lg md:w-full max-h-[90vh] overflow-y-auto',
 			className
 		)}
 		{...$$restProps}

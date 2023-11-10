@@ -41,7 +41,7 @@
 			>
 				<Icon icon="mdi:edit" />
 			</DialogTrigger>
-			<DialogContent>
+			<DialogContent on:close={() => setTimeout(() => form.update(f => BillSchema.parse(f)))} let:openStore>
 				<DialogHeader>
 					<DialogTitle>
 						Edit {title}
@@ -65,6 +65,7 @@
                         const percentNum = parseFloat(val);
                         $form[taxOrTip] = subtotal * percentNum / 100;
                     }}
+					on:enter={() => openStore.set(false)}
 				/>
 				<FormField {config} name={taxOrTip}>
 					<FormLabel>Amount</FormLabel>
@@ -74,6 +75,7 @@
 						step="0.01"
 						leadIcon="mdi:dollar"
 						placeholder="Amount"
+						on:enter={() => openStore.set(false)}
 					/>
 					<FormValidation />
 				</FormField>

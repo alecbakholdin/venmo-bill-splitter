@@ -51,7 +51,7 @@
 			</span>
 		</Button>
 	</Dialog.Trigger>
-	<Dialog.Content let:openStore on:load={console.error}>
+	<Dialog.Content let:openStore on:close={() => setTimeout(() => form.update(f => BillSchema.parse(f)), 300)}>
 		{@const onEnter = () => itemValid && openStore.set(false)}
 		<Dialog.Header><Dialog.Title>Edit Item</Dialog.Title></Dialog.Header>
 		{#if !item.friends.length}

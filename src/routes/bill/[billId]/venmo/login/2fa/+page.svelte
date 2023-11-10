@@ -16,6 +16,12 @@
 	<p class="font-bold text-2xl">Confirm SMS Code</p>
 	<p class="text-muted-foreground text-sm pb-4">Check your phone for a text message</p>
 	<Form form={data.form} schema={ConfirmSmsSchema} let:config>
+		<FormField {config} name="csrfToken">
+			<FormInput type="hidden" value={data.csrfToken}/>
+		</FormField>
+		<FormField {config} name="otpSecret">
+			<FormInput type="hidden" value={data.otpSecret}/>
+		</FormField>
 		<div class="flex flex-col gap-2">
 			<FormField {config} name="code">
 				<FormLabel>Code</FormLabel>

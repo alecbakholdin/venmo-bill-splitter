@@ -69,16 +69,20 @@ export const actions = {
 };
 
 async function parseReceipt(receipt: Blob, bill: z.infer<typeof BillSchema>) {
-	const poller = await receiptParserClient.beginAnalyzeDocument('prebuilt-receipt', await receipt.arrayBuffer());
+	const poller = await receiptParserClient.beginAnalyzeDocument(
+		'prebuilt-receipt',
+		await receipt.arrayBuffer()
+	);
 	const result = await poller.pollUntilDone();
 	const docFields = result?.documents?.[0]?.fields;
-	if(docFields) {
+	if (docFields) {
 		const items = (docFields.Items as any)?.values;
-		for(const {properties} of items) {
+		for (const { properties } of items) {
 			const title: string = properties.Description?.value ?? 'Item';
-			const unitPrice: number = properties.Price?.value ?? properties.TotalPrice?.value;
 			const quantity: number = properties.Quantity?.value ?? 1;
-			bill.items.push({unitPrice, quantity, title, friends: [], splitType: 'shares', total: 0})
+			const unitPrice: number =
+				properties.Price?.value ?? ((properties.TotalPrice?.value ?? 0) / quantity);
+			bill.items.push({ unitPrice, quantity, title, friends: [], splitType: 'shares', total: 0 });
 		}
 		bill.tax = (docFields.TotalTax as any)?.value ?? 0;
 		bill.tip = (docFields.TotalTip as any)?.value ?? 0;

@@ -12,10 +12,10 @@ export async function load({ cookies, url }) {
 	if (smsResp === 'failure') {
 		throw error(503, { message: 'Unexpected error sending SMS' });
 	}
-	const form = await superValidate(ConfirmSmsSchema);
-	form.data = { ...form.data, ...smsResp };
+	console.log(smsResp);
 	return {
-		form
+		form: await superValidate(ConfirmSmsSchema),
+		...smsResp
 	};
 }
 
