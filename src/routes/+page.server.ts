@@ -74,11 +74,13 @@ async function parseReceipt(receipt: Blob, bill: z.infer<typeof BillSchema>) {
 		await receipt.arrayBuffer()
 	);
 	const result = await poller.pollUntilDone();
-	console.log(JSON.stringify(result, null, 2));
 	const docFields = result?.documents?.[0]?.fields;
+	const {Items, ...fields} = docFields as any;
+	console.log(JSON.stringify(fields, null, 2));
 	if (docFields) {
 		const items = (docFields.Items as any)?.values;
 		for (const { properties } of items) {
+			console.log(JSON.stringify(properties, null, 2));
 			const title: string = properties.Description?.value ?? 'Item';
 			const quantity: number = properties.Quantity?.value ?? 1;
 			const unitPrice: number =
