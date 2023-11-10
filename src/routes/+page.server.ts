@@ -104,6 +104,6 @@ function formatObject(obj: any) {
 		return obj;
 	}
 	return Object.fromEntries(
-		Object.entries(obj).filter(([key]) => key !== 'boundingRegions').map(([key, value]) => [key, formatObj(value)])
+		Object.entries(obj).filter(([key]) => key !== 'boundingRegions').map(([key, value]) => [key, formatObject(value)])
 	)
 }
