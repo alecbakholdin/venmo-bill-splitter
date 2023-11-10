@@ -90,7 +90,7 @@ async function parseReceipt(receipt: Blob, bill: z.infer<typeof BillSchema>) {
 			bill.items.push({ unitPrice, quantity, title, friends: [], splitType: 'shares', total: 0 });
 		}
 		bill.tax = (docFields.TotalTax as any)?.value ?? 0;
-		bill.tip = (docFields.TotalTip as any)?.value ?? 0;
+		bill.tip = (docFields.Tip as any)?.value ?? 0;
 	}
 }
 
@@ -98,11 +98,12 @@ function printObj(obj: any) {
 	console.log(JSON.stringify(formatObject(obj), null, 2));
 }
 
-function formatObject(obj: any) {
+function formatObject(obj: any): any {
 	if(!obj) return obj;
-	if(Array.isArray(obj) || typeof obj !== "object"){
-		return obj;
+	if(Array.isArray(obj)){
+		return obj.map(formatObject);
 	}
+	if(typeof obj !== 'object') return obj;
 	return Object.fromEntries(
 		Object.entries(obj).filter(([key]) => key !== 'boundingRegions').map(([key, value]) => [key, formatObject(value)])
 	)
