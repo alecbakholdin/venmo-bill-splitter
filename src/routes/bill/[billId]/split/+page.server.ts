@@ -19,6 +19,7 @@ export const actions = {
 	async default({ request, params, url, fetch }) {
 		const form = await superValidate(request, SplitBillSchema);
 		if (!form.valid) return fail(400, { form });
+		console.log(form.data);;
 		const venmo = formatVenmo(form.data.venmo);
 		const email = form.data.email;
 		const friendDefaults = getDefaults(FriendSchema);

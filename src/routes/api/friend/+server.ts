@@ -6,6 +6,7 @@ import { json } from '@sveltejs/kit';
 export async function POST({ request, locals }) {
 	const { email } = await getUser(locals);
 	const friendInput = { ...(await request.json()), user: email };
+	console.log('input', friendInput);
 	const friend = FriendSchema.parse(friendInput);
 
 	const resp = await friendCollection
@@ -14,8 +15,10 @@ export async function POST({ request, locals }) {
 		.get();
 	if (!resp.empty) {
 		await resp.docs[0].ref.set(friend);
+		console.log('updated', friend);
 	} else {
 		await friendCollection.add(friend);
+		console.log('created', friend);
 	}
 
 	return json(friend);
