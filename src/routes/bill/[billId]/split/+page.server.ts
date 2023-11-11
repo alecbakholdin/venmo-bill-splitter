@@ -25,7 +25,8 @@ export const actions = {
 		const friendDefaults = getDefaults(FriendSchema);
 		const resp = await fetch('/api/friend', {
 			method: 'POST',
-			body: JSON.stringify({ ...friendDefaults, email, venmo })
+			body: JSON.stringify({ ...friendDefaults, email, venmo }),
+			credentials: 'include'
 		});
 		console.log(resp);
 
