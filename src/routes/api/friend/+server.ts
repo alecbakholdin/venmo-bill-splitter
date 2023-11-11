@@ -4,6 +4,7 @@ import { getUser } from '$lib/utils.server.js';
 import { json } from '@sveltejs/kit';
 
 export async function POST({ request, locals }) {
+	console.log('got here')
 	const { email } = await getUser(locals);
 	const friendInput = { ...(await request.json()), user: email };
 	console.log('input', friendInput);
