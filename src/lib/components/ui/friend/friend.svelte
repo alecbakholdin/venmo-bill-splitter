@@ -68,7 +68,7 @@
 		<Skeleton class="rounded-full w-5/6 mt-1" />
 	{:then friend}
 		{#if false && friend?.venmo}
-			<VenmoPersonRow venmo={friend!.venmo} />
+			<!-- <VenmoPersonRow venmo={friend!.venmo} /> -->
 		{:else if friend}
 			<div
 				class="row-span-2 rounded-full w-12 h-12 bg-muted grid place-items-center text-3xl place-self-center"
