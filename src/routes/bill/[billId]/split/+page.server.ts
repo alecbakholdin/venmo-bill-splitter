@@ -28,7 +28,7 @@ export const actions = {
 			body: JSON.stringify({ ...friendDefaults, email, venmo }),
 			credentials: 'include'
 		});
-		console.log(resp);
+		console.log(JSON.stringify(resp, null, 2));
 
 		const bill = await getBillFromJwt(url.searchParams.get('auth'), params.billId, 'split');
 		const billData = bill.data();
