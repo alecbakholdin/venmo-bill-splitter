@@ -48,6 +48,10 @@ const redirectOnLogin: Handle = async ({ event, resolve }) => {
 };
 
 export const handle = sequence(
+	({event, resolve}) => {
+		console.log(event.url.pathname);
+		return resolve(event);
+	},
 	SvelteKitAuth({
 		providers: [Google({ clientId: GOOGLE_CLIENT_ID, clientSecret: GOOGLE_CLIENT_SECRET })],
 		adapter: FirestoreAdapter(firestore)

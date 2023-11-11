@@ -23,11 +23,13 @@ export const actions = {
 		const venmo = formatVenmo(form.data.venmo);
 		const email = form.data.email;
 		const friendDefaults = getDefaults(FriendSchema);
+		console.log({...friendDefaults, email, venmo});
 		const resp = await fetch('/api/friend', {
 			method: 'POST',
 			body: JSON.stringify({ ...friendDefaults, email, venmo }),
 			credentials: 'include'
 		});
+		console.log(resp.status);
 		console.log(JSON.stringify(resp, null, 2));
 
 		const bill = await getBillFromJwt(url.searchParams.get('auth'), params.billId, 'split');
