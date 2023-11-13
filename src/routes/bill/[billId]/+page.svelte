@@ -8,12 +8,12 @@
 	import BillCreateFriend from './__route/BillCreateFriend.svelte';
 	import BillExtraActions from './__route/BillExtraActions.svelte';
 	import BillFriendInviter from './__route/BillFriendInviter/BillFriendInviter.svelte';
-	import BillFriendRow from './__route/BillFriendRow.svelte';
 	import BillItemRow from './__route/BillItemRow.svelte';
 	import BillTitle from './__route/BillTitle.svelte';
 	import PercentAmountEditor from './__route/PercentAmountEditor.svelte';
 	import { page } from '$app/stores';
 	import FriendList from './__route/FriendList/FriendList.svelte';
+	import ItemList from './__route/ItemList/ItemList.svelte';
 
 	export let data;
 </script>
@@ -63,16 +63,7 @@
 			<Card.Title class="flex items-center gap-2">Items</Card.Title>
 		</Card.Header>
 		<Card.Content>
-			<div class="flex flex-col gap-1">
-				{#each formValues.items as item, i (`${item.title}-${i}`)}
-					<div class="w-full" transition:slide>
-						<BillItemRow {item} {i} />
-					</div>
-					<!-- <Separator class="last:hidden" /> -->
-				{:else}
-					<span class="text-muted-foreground text-md pt-3">No Items</span>
-				{/each}
-			</div>
+			<ItemList />
 		</Card.Content>
 		<Card.Footer>
 			<Button

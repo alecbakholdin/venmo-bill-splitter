@@ -15,7 +15,7 @@
 {#each $form.friends as friend, i (friend.email)}
 	<div transition:slide>
 		<Button
-			class="w-full flex justify-between items-center gap-2 px-0"
+			class="w-full flex justify-between items-center gap-2 px-2"
 			type="button"
 			variant="ghost"
 			on:click={() => {
