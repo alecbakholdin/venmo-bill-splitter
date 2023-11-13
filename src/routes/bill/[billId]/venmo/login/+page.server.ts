@@ -25,7 +25,7 @@ export const actions = {
 					{ status: 503 }
 				);
 			default:
-				throw redirect(308, `${url.pathname}/2fa?k=${loginResp.otpSecret}`);
+				throw redirect(308, `${url.pathname}/sendSms?k=${loginResp.otpSecret}`);
 		}
 	}
 };

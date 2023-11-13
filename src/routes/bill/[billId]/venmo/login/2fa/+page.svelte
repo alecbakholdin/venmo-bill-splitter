@@ -15,12 +15,22 @@
 <div class="w-full py-10 px-4">
 	<p class="font-bold text-2xl">Confirm SMS Code</p>
 	<p class="text-muted-foreground text-sm pb-4">Check your phone for a text message</p>
-	<Form form={data.form} schema={ConfirmSmsSchema} let:config>
+	<Form
+		options={{ resetForm: false }}
+		form={data.form}
+		schema={ConfirmSmsSchema}
+		let:config
+		let:formValues
+	>
+		{JSON.stringify(formValues)}
+
 		<FormField {config} name="csrfToken">
-			<FormInput type="hidden" value={data.csrfToken}/>
+			<FormValidation />
+			<FormInput type="hidden" value={data.csrfToken} />
 		</FormField>
 		<FormField {config} name="otpSecret">
-			<FormInput type="hidden" value={data.otpSecret}/>
+			<FormValidation />
+			<FormInput type="hidden" value={data.otpSecret} />
 		</FormField>
 		<div class="flex flex-col gap-2">
 			<FormField {config} name="code">

@@ -1,27 +1,34 @@
-import { error, fail, redirect } from '@sveltejs/kit';
-import { sendSms } from '../__route/actions/sendSms.server.js';
+import { fail, redirect } from '@sveltejs/kit';
 import { message, superValidate } from 'sveltekit-superforms/server';
-import { ConfirmSmsSchema } from '../__route/schemas/confirmSmsSchema.js';
 import { confirmSms } from '../__route/actions/confirmSms.server.js';
+import { ConfirmSmsSchema } from '../__route/schemas/confirmSmsSchema.js';
 
 export async function load({ cookies, url }) {
 	const otpSecret = url.searchParams.get('k');
-	if (!otpSecret) throw redirect(308, url.pathname.slice(0, url.pathname.lastIndexOf('/2fa')));
-
-	const smsResp = await sendSms(cookies, otpSecret);
-	if (smsResp === 'failure') {
-		throw error(503, { message: 'Unexpected error sending SMS' });
+	const csrfToken = url.searchParams.get('csrfToken');
+	if (!otpSecret || !csrfToken) {
+		console.log('missing csrfToken or otpSecret', csrfToken, otpSecret);
+		throw redirect(308, url.pathname.slice(0, url.pathname.lastIndexOf('/2fa')));
 	}
-	console.log(smsResp);
+
+	const form = await superValidate(ConfirmSmsSchema);
+	form.data = {
+		otpSecret,
+		csrfToken,
+		code: '',
+		rememberDevice: true
+	};
 	return {
-		form: await superValidate(ConfirmSmsSchema),
-		...smsResp
+		form,
+		csrfToken,
+		otpSecret
 	};
 }
 
 export const actions = {
 	async default({ request, cookies, url }) {
 		const form = await superValidate(request, ConfirmSmsSchema);
+		console.log(form.data);
 		if (!form.valid) return fail(400, { form });
 
 		const { rememberDevice, ...config } = form.data;
@@ -30,6 +37,6 @@ export const actions = {
 		if (confirmResp === 'failure')
 			return message(form, { message: 'Failed to confirm SMS' }, { status: 503 });
 
-        throw redirect(308, url.pathname.slice(0, url.pathname.lastIndexOf('/login/2fa')));
+		throw redirect(308, url.pathname.slice(0, url.pathname.lastIndexOf('/login/2fa')));
 	}
 };
