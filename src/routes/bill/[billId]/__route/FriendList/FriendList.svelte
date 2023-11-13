@@ -15,7 +15,7 @@
 {#each $form.friends as friend, i (friend.email)}
 	<div transition:slide>
 		<Button
-			class="w-full flex justify-between px-0"
+			class="w-full flex justify-between items-center gap-2 px-0"
 			type="button"
 			variant="ghost"
 			on:click={() => {
@@ -24,7 +24,9 @@
 			}}
 		>
 			<Friend email={friend.email} />
-            
+			<span class="font-bold">
+				${friend.total.toFixed(2)}
+			</span>
 		</Button>
 	</div>
 {:else}
