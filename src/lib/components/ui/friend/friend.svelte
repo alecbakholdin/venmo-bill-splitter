@@ -1,6 +1,5 @@
 <script lang="ts" context="module">
 	import type { FriendSchema } from '$lib/firestore/schemas/Friend';
-	import { json } from '@sveltejs/kit';
 	import { get, writable } from 'svelte/store';
 	import type { z } from 'zod';
 
@@ -67,16 +66,16 @@
 		<Skeleton class="rounded-full w-full mb-1" />
 		<Skeleton class="rounded-full w-5/6 mt-1" />
 	{:then friend}
-		{#if false && friend?.venmo}
-			<!-- <VenmoPersonRow venmo={friend!.venmo} /> -->
-		{:else if friend}
+		{#if friend?.venmo}
+			<VenmoPersonRow venmo={friend.venmo} />
+		{:else if email}
 			<div
 				class="row-span-2 rounded-full w-12 h-12 bg-muted grid place-items-center text-3xl place-self-center"
 			>
 				<Icon icon="mdi:person" />
 			</div>
 			<div class="row-span-2 flex h-full items-center">
-				{friend.email}
+				{email}
 			</div>
 		{/if}
 	{:catch friendError}

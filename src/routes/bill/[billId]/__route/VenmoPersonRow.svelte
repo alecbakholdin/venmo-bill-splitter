@@ -35,6 +35,8 @@
 </script>
 
 <script lang="ts">
+	import { Avatar, AvatarFallback, AvatarImage } from "$lib/components/ui/avatar";
+
 	export let venmo: string | null | undefined;
 	export let valid: boolean = false;
 	export let venmoPerson: z.infer<typeof VenmoPersonSchema> | undefined = undefined;
@@ -62,31 +64,28 @@
 	$: venmoPersonPromise = update($debouncedVenmo);
 </script>
 
-<div class="grid grid-cols-[auto_1fr] gap-x-3">
+<div class="flex items-center gap-3">
 	{#await venmoPersonPromise}
-		<Skeleton class="row-span-2 rounded-full aspect-square w-12" />
-		<Skeleton class="rounded-full w-full mb-1" />
-		<Skeleton class="rounded-full w-5/6 mt-1" />
+		<Skeleton class="flex-shrink-0 rounded-full aspect-square w-12" />
+		<div class="flex-grow">
+			<Skeleton class="rounded-full w-full mb-1" />
+			<Skeleton class="rounded-full w-5/6 mt-1" />
+		</div>
 	{:then data}
-		{#if data?.avatar}
-			<img
-				src={data.avatar}
-				alt={data.displayName}
-				class="row-span-2 rounded-full aspect-square w-12"
-			/>
-		{:else}
-			<div
-				class="row-span-2 rounded-full w-12 h-12 bg-muted grid place-items-center text-3xl place-self-center"
-			>
-				<Icon icon="mdi:person" />
-			</div>
-		{/if}
+		<Avatar class="h-12 w-12 flex-shrink-0">
+			<AvatarImage src={data?.avatar} alt={data}/>
+			<AvatarFallback>
+				<Icon icon="mdi:person"/>
+			</AvatarFallback>
+		</Avatar>
 
-		<span class="text-start font-bold text-ellipsis whitespace-nowrap">
-			{data?.displayName ?? '--'}
-		</span>
-		<span class="text-start text-muted-foreground text-ellipsis whitespace-nowrap">
-			{data?.venmo ? `@${data.venmo}` : '--'}
-		</span>
+		<div class="flex flex-col w-full">
+			<span class="text-start font-bold text-ellipsis whitespace-nowrap w-full">
+				{data?.displayName ?? '--'}
+			</span>
+			<span class="text-start text-muted-foreground text-ellipsis whitespace-nowrap">
+				{data?.venmo ? `@${data.venmo}` : '--'}
+			</span>
+		</div>
 	{/await}
 </div>

@@ -2,61 +2,26 @@
 	import { buttonVariants } from '$lib/components/ui/button';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import {
-		Dialog,
 		DialogClose,
 		DialogContent,
+		DialogFooter,
 		DialogHeader,
-		DialogTrigger
+		DialogTitle
 	} from '$lib/components/ui/dialog';
-	import DialogFooter from '$lib/components/ui/dialog/dialog-footer.svelte';
-	import DialogTitle from '$lib/components/ui/dialog/dialog-title.svelte';
-	import { FormField } from '$lib/components/ui/form';
-	import FormValidation from '$lib/components/ui/form/form-validation.svelte';
 	import { Friend } from '$lib/components/ui/friend';
-	import Label from '$lib/components/ui/label/label.svelte';
-	import Separator from '$lib/components/ui/separator/separator.svelte';
-	import {
-		BillItemFriendSchema,
-		BillSchema,
-		type BillFriendSchema
-	} from '$lib/firestore/schemas/Bill';
+	import { Label } from '$lib/components/ui/label';
+	import { Separator } from '$lib/components/ui/separator';
+	import { BillItemFriendSchema, BillSchema } from '$lib/firestore/schemas/Bill';
 	import { cn, getDefaults } from '$lib/utils';
-	import { getForm } from 'formsnap';
-	import type { z } from 'zod';
+	import { getBillFormConfig } from '../utils';
+	import { friendIndex } from './friendIndex';
 
-	export let friend: z.infer<typeof BillFriendSchema>;
-	export let i: number;
-
-	const formContext = getForm<z.ZodEffects<typeof BillSchema>>();
-	$: ({ form } = formContext);
-	const config = { form: formContext, schema: BillSchema };
+	const config = getBillFormConfig();
+	$: ({ form } = config.form);
+	$: friend = $friendIndex >= 0 ? $form.friends[$friendIndex] : undefined;
 </script>
 
-<Dialog>
-	<DialogTrigger
-		class={cn(buttonVariants({ variant: 'ghost', class: 'flex items-center gap-2 w-full px-2' }))}
-	>
-<!-- 		<div class="flex-grow">
-			<Friend email={friend.email} />
-		</div> -->
-		<span class="font-bold place-self-center">
-			${friend.total.toFixed(2)}
-		</span>
-		<FormField {config} name="friends[{i}].email">
-			<FormValidation />
-		</FormField>
-<!-- 		<Button
-			type="button"
-			variant="destructive"
-			size="icon"
-			class="flex-shrink-0 h-8 w-8"
-			on:click={(e) => {
-				e.stopPropagation();
-			}}
-		>
-			<Icon icon="mdi:remove" />
-		</Button> -->
-	</DialogTrigger>
+{#if friend}
 	<DialogContent>
 		<DialogHeader>
 			<DialogTitle>Edit Person</DialogTitle>
@@ -66,7 +31,7 @@
 		<div class="flex flex-col">
 			{#each $form.items as item, i}
 				{@const checkboxId = `${friend.email}-item-${i}`}
-				{@const selected = !!item.friends.find((fr) => fr.email === friend.email)}
+				{@const selected = !!item.friends.find((fr) => fr.email === friend?.email)}
 				<Label for={checkboxId} class="grid grid-flow-col grid-cols-[auto_1fr_auto] gap-2">
 					<Checkbox
 						id={checkboxId}
@@ -74,8 +39,8 @@
 						class="row-span-2 place-self-center"
 						on:click={() => {
 							if (selected) {
-								item.friends = item.friends.filter((fr) => fr.email !== friend.email);
-							} else {
+								item.friends = item.friends.filter((fr) => fr.email !== friend?.email);
+							} else if (friend?.email) {
 								item.friends = [
 									...item.friends,
 									{ ...getDefaults(BillItemFriendSchema), email: friend.email }
@@ -108,21 +73,18 @@
 			<DialogClose
 				class={cn(buttonVariants({ variant: 'destructive' }))}
 				on:click={() =>
-					setTimeout(
-						() =>
-							form.update(($form) => {
-								$form.friends = $form.friends.filter((_, idx) => idx !== i);
-								for (const item of $form.items) {
-									item.friends = item.friends.filter(({ email }) => email !== friend.email);
-								}
-								return $form;
-							}),
-						300
-					)}
+					form.update(($form) => {
+						$form.friends = $form.friends.filter((_, idx) => idx !== $friendIndex);
+                        console.log(friend);
+						for (const item of $form.items) {
+							item.friends = item.friends.filter(({ email }) => email !== friend?.email);
+						}
+						return $form;
+					})}
 			>
 				Delete
 			</DialogClose>
 			<DialogClose class={cn(buttonVariants({ variant: 'outline' }))}>Close</DialogClose>
 		</DialogFooter>
 	</DialogContent>
-</Dialog>
+{/if}

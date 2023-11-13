@@ -13,6 +13,7 @@
 	import BillTitle from './__route/BillTitle.svelte';
 	import PercentAmountEditor from './__route/PercentAmountEditor.svelte';
 	import { page } from '$app/stores';
+	import FriendList from './__route/FriendList/FriendList.svelte';
 
 	export let data;
 </script>
@@ -104,13 +105,7 @@
 			</div>
 		</Card.Header>
 		<Card.Content>
-			{#each formValues.friends as friend, i (friend.email)}
-				<div class="w-full" transition:slide>
-					<BillFriendRow {friend} {i} />
-				</div>
-			{:else}
-				<span class="text-muted-foreground">There are no people</span>
-			{/each}
+			<FriendList />
 		</Card.Content>
 		<Card.Footer>
 			<BillCreateFriend />
