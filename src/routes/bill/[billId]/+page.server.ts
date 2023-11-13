@@ -3,12 +3,13 @@ import { fail, redirect } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/server';
 import { billExists, getBill } from './__route/utils.server.js';
 import { createInviteJwt } from '../../../lib/types/inviteAuth.server.js';
+import type { z } from 'zod';
 
 export async function load({ params, locals, url }) {
 	const bill = (await getBill(params.billId, locals)).data();
 
 	const editBillForm = await superValidate(BillSchema);
-	editBillForm.data = bill;
+	editBillForm.data = bill as z.infer<typeof BillSchema>;
 	const billInviteUrl =
 		url.origin +
 		url.pathname +
