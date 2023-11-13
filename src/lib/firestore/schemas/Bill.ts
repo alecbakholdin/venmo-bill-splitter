@@ -82,7 +82,8 @@ export const BillSchema = z
 				const friendSubtotal = values.items
 					.flatMap((item) => item.friends.filter((itemFriend) => itemFriend.email === friend.email))
 					.reduce((total, { totalOwed }) => total + totalOwed, 0);
-				const friendTotal = friendSubtotal + (friendSubtotal / subtotal) * (tax + tip);
+				const friendSubtotalFraction = subtotal > 0 ? friendSubtotal / subtotal : 0;
+				const friendTotal = friendSubtotal + friendSubtotalFraction * (tax + tip);
 				return {
 					...friend,
 					items: items.map((item) => ({

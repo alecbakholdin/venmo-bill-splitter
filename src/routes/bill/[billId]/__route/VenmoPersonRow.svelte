@@ -13,7 +13,9 @@
 		return venmo?.toLowerCase().replaceAll(/[^a-z0-9-_]/g, '') ?? '';
 	}
 
-	async function fetchVenmo(venmo: string | null | undefined) {
+	export async function fetchVenmo(
+		venmo: string | null | undefined
+	): Promise<z.infer<typeof VenmoPersonSchema> | undefined> {
 		if (typeof window === 'undefined') return undefined;
 		const iVenmo = formatVenmo(venmo);
 
@@ -35,7 +37,7 @@
 </script>
 
 <script lang="ts">
-	import { Avatar, AvatarFallback, AvatarImage } from "$lib/components/ui/avatar";
+	import { Avatar, AvatarFallback, AvatarImage } from '$lib/components/ui/avatar';
 
 	export let venmo: string | null | undefined;
 	export let valid: boolean = false;
@@ -73,9 +75,9 @@
 		</div>
 	{:then data}
 		<Avatar class="h-12 w-12 flex-shrink-0">
-			<AvatarImage src={data?.avatar} alt={data}/>
+			<AvatarImage src={data?.avatar} alt={data?.displayName} />
 			<AvatarFallback>
-				<Icon icon="mdi:person"/>
+				<Icon icon="mdi:person" />
 			</AvatarFallback>
 		</Avatar>
 

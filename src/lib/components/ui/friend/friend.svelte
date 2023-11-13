@@ -6,7 +6,7 @@
 	export type Friend = z.infer<typeof FriendSchema>;
 	const friendCache = writable<Record<string, Friend>>({});
 
-	async function getFriend(email: string | null | undefined) {
+	export async function getFriend(email: string | null | undefined) {
 		if (!email) return undefined;
 
 		email = email.trim().toLowerCase();

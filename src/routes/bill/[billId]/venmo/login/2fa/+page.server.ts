@@ -2,6 +2,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import { message, superValidate } from 'sveltekit-superforms/server';
 import { confirmSms } from '../__route/actions/confirmSms.server.js';
 import { ConfirmSmsSchema } from '../__route/schemas/confirmSmsSchema.js';
+import { rememberDevice } from '../__route/actions/rememberDevice.server.js';
 
 export async function load({ cookies, url }) {
 	const otpSecret = url.searchParams.get('k');
@@ -31,12 +32,13 @@ export const actions = {
 		console.log(form.data);
 		if (!form.valid) return fail(400, { form });
 
-		const { rememberDevice, ...config } = form.data;
+		const { rememberDevice: userWantsToRememberDevice, ...config } = form.data;
 		const confirmResp = await confirmSms(cookies, config);
 
 		if (confirmResp === 'failure')
 			return message(form, { message: 'Failed to confirm SMS' }, { status: 503 });
 
+		await rememberDevice(cookies);
 		throw redirect(308, url.pathname.slice(0, url.pathname.lastIndexOf('/login/2fa')));
 	}
 };

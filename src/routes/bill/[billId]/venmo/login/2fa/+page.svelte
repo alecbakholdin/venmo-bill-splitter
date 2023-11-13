@@ -20,10 +20,7 @@
 		form={data.form}
 		schema={ConfirmSmsSchema}
 		let:config
-		let:formValues
 	>
-		{JSON.stringify(formValues)}
-
 		<FormField {config} name="csrfToken">
 			<FormValidation />
 			<FormInput type="hidden" value={data.csrfToken} />
