@@ -1,6 +1,6 @@
 import { AZURE_FORM_RECOGNIZER_ENDPOINT, AZURE_FORM_RECOGNIZER_KEY } from '$env/static/private';
 import { billCollection } from '$lib/firestore/collections.server';
-import { BillSchema } from '$lib/firestore/schemas/Bill';
+import { BillItemSchema, BillSchema } from '$lib/firestore/schemas/Bill';
 import { getUser } from '$lib/utils.server';
 import { AzureKeyCredential, DocumentAnalysisClient } from '@azure/ai-form-recognizer';
 import { fail, redirect } from '@sveltejs/kit';
@@ -71,23 +71,41 @@ export const actions = {
 async function parseReceipt(receipt: Blob, bill: z.infer<typeof BillSchema>) {
 	const poller = await receiptParserClient.beginAnalyzeDocument(
 		'prebuilt-receipt',
-		await receipt.arrayBuffer(),
+		await receipt.arrayBuffer()
 	);
 	const result = await poller.pollUntilDone();
 	const docFields = result?.documents?.[0]?.fields;
-	const {Items, ...fields} = docFields as any;
+	const { Items, ...fields } = docFields as any;
 	printObj(result);
 	printObj(fields);
 	printObj(Items);
 	if (docFields) {
 		const items = (docFields.Items as any)?.values;
+		let calculatedSubtotal = 0;
+		const defaultItem: Omit<z.infer<typeof BillItemSchema>, "unitPrice" | "quantity" | "title"> = {
+			friends: [],
+			splitType: 'shares',
+			total: 0,
+			addNewFriends: false,
+		}
 		for (const { properties } of items) {
 			printObj(properties);
 			const title: string = properties.Description?.value ?? 'Item';
 			const quantity: number = properties.Quantity?.value ?? 1;
 			const unitPrice: number =
-				properties.Price?.value ?? ((properties.TotalPrice?.value ?? 0) / quantity);
-			bill.items.push({ unitPrice, quantity, title, friends: [], splitType: 'shares', total: 0 });
+				properties.Price?.value ?? (properties.TotalPrice?.value ?? 0) / quantity;
+			bill.items.push({...defaultItem, unitPrice, quantity, title});
+			calculatedSubtotal += quantity * unitPrice;
+		}
+		const parsedSubtotal = (docFields.Subtotal as any)?.value ?? 0;
+		const subtotalDiff = parsedSubtotal - calculatedSubtotal;
+		if(parsedSubtotal && subtotalDiff > 0.01) {
+			bill.items.unshift({
+				...defaultItem,
+				unitPrice: subtotalDiff,
+				quantity: 1,
+				title: "Missing Value"
+			})
 		}
 		bill.tax = (docFields.TotalTax as any)?.value ?? 0;
 		bill.tip = (docFields.Tip as any)?.value ?? 0;
@@ -99,12 +117,14 @@ function printObj(obj: any) {
 }
 
 function formatObject(obj: any): any {
-	if(!obj) return obj;
-	if(Array.isArray(obj)){
+	if (!obj) return obj;
+	if (Array.isArray(obj)) {
 		return obj.map(formatObject);
 	}
-	if(typeof obj !== 'object') return obj;
+	if (typeof obj !== 'object') return obj;
 	return Object.fromEntries(
-		Object.entries(obj).filter(([key]) => key !== 'boundingRegions').map(([key, value]) => [key, formatObject(value)])
-	)
+		Object.entries(obj)
+			.filter(([key]) => key !== 'boundingRegions')
+			.map(([key, value]) => [key, formatObject(value)])
+	);
 }
