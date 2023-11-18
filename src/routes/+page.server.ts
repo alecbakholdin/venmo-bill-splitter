@@ -78,37 +78,46 @@ async function parseReceipt(receipt: Blob, bill: z.infer<typeof BillSchema>) {
 	const { Items, ...fields } = docFields as any;
 	printObj(result);
 	printObj(fields);
-	printObj(Items);
+	//printObj(Items);
 	if (docFields) {
 		const items = (docFields.Items as any)?.values;
 		let calculatedSubtotal = 0;
-		const defaultItem: Omit<z.infer<typeof BillItemSchema>, "unitPrice" | "quantity" | "title"> = {
+		const defaultItem: Omit<z.infer<typeof BillItemSchema>, 'unitPrice' | 'quantity' | 'title'> = {
 			friends: [],
 			splitType: 'shares',
 			total: 0,
-			addNewFriends: false,
-		}
+			addNewFriends: false
+		};
 		for (const { properties } of items) {
-			printObj(properties);
+			//printObj(properties);
 			const title: string = properties.Description?.value ?? 'Item';
 			const quantity: number = properties.Quantity?.value ?? 1;
 			const unitPrice: number =
 				properties.Price?.value ?? (properties.TotalPrice?.value ?? 0) / quantity;
-			bill.items.push({...defaultItem, unitPrice, quantity, title});
+			bill.items.push({ ...defaultItem, unitPrice, quantity, title });
 			calculatedSubtotal += quantity * unitPrice;
 		}
 		const parsedSubtotal = (docFields.Subtotal as any)?.value ?? 0;
 		const subtotalDiff = parsedSubtotal - calculatedSubtotal;
-		if(parsedSubtotal && subtotalDiff > 0.01) {
+		if (parsedSubtotal && subtotalDiff > 0.01) {
 			bill.items.unshift({
 				...defaultItem,
 				unitPrice: subtotalDiff,
 				quantity: 1,
-				title: "Missing Value"
-			})
+				title: 'Missing Value'
+			});
 		}
-		bill.tax = (docFields.TotalTax as any)?.value ?? 0;
-		bill.tip = (docFields.Tip as any)?.value ?? 0;
+		bill.tax =
+			(docFields.TotalTax as any)?.value ??
+			(docFields.TaxDetails as any)?.values?.reduce(
+				(total: number, obj: any) => (obj?.properties?.Amount?.value?.amount ?? 0) + total,
+				0
+			);
+		bill.tip = (docFields.Tip as any)?.value;
+		if (bill.tax !== undefined || bill.tip !== undefined) {
+			bill.tax = bill.tax ?? 0;
+			bill.tip = bill.tip ?? 0;
+		}
 	}
 }
 

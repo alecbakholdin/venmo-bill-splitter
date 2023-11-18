@@ -36,7 +36,7 @@
 				<FormLabel>Unit Price</FormLabel>
 				<FormInput
 					type="number"
-					inputmode="numeric"
+					inputmode="decimal"
 					step="0.01"
 					leadIcon="mdi:dollar"
 					placeholder="Unit Price"

@@ -54,7 +54,7 @@
 				<Label for="{taxOrTip}-percent">Percent</Label>
 				<Input
 					type="number"
-					inputmode="numeric"
+					inputmode="decimal"
 					step="0.01"
 					id="{taxOrTip}-percent"
 					leadIcon="material-symbols:percent"
@@ -71,7 +71,7 @@
 					<FormLabel>Amount</FormLabel>
 					<FormInput
 						type="number"
-						inputmode="numeric"
+						inputmode="decimal"
 						step="0.01"
 						leadIcon="mdi:dollar"
 						placeholder="Amount"
