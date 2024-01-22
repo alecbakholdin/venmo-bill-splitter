@@ -58,7 +58,7 @@
 	</Card.Root>
 	<Card.Root class="rounded-lg mx-2 sm:mx-0 mt-4">
 		<Card.Header>
-			<Card.Title class="flex items-center gap-2">
+			<Card.Title class="flex items-center gap-2 h-6">
 				<span class="flex-grow">Items</span>
 				<ItemListExtraActions />
 			</Card.Title>
