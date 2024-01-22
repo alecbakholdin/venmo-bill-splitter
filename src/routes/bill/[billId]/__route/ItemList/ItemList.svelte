@@ -27,7 +27,7 @@
 	let open = false;
 </script>
 
-{#each $form.items as item, i (`${item.title}`)}
+{#each $form.items as item, i}
 	{@const missingFriends = !item.friends.length}
 	{@const borderColor = missingFriends ? 'border-destructive' : 'border-transparent'}
 	<div transition:slide class="flex items-center gap-2">
