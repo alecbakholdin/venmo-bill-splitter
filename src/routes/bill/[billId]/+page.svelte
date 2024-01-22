@@ -4,20 +4,22 @@
 	import * as Form from '$lib/components/ui/form';
 	import { BillSchema } from '$lib/firestore/schemas/Bill';
 	import Icon from '@iconify/svelte';
+	import { scale } from 'svelte/transition';
 	import BillCreateFriend from './__route/BillCreateFriend.svelte';
 	import BillExtraActions from './__route/BillExtraActions.svelte';
 	import BillFriendInviter from './__route/BillFriendInviter/BillFriendInviter.svelte';
 	import BillTitle from './__route/BillTitle.svelte';
 	import FriendList from './__route/FriendList/FriendList.svelte';
 	import ItemList from './__route/ItemList/ItemList.svelte';
-	import PercentAmountEditor from './__route/PercentAmountEditor.svelte';
 	import ItemListExtraActions from './__route/ItemList/ItemListExtraActions.svelte';
+	import PercentAmountEditor from './__route/PercentAmountEditor.svelte';
 
 	export let data;
 </script>
 
 <p class="w-full p-2 text-center font-bold">Your Bill</p>
 <Form.Root
+	class="pb-20"
 	form={data.editBillForm}
 	schema={BillSchema}
 	options={{
@@ -27,6 +29,8 @@
 	let:formValues
 	let:formStore
 	let:tainted
+	let:submitting
+	let:reset
 >
 	{@const taxOrTip = formValues.tax !== undefined || formValues.tip !== undefined}
 	<Card.Root class="rounded-lg mx-2 sm:mx-0">
@@ -103,19 +107,16 @@
 			<BillCreateFriend />
 		</Card.Footer>
 	</Card.Root>
-
-	<Card.Root class="rounded-lg mx-2 sm:mx-0 my-4">
-		<Card.Content class="p-4">
-			<Form.Button disabled={!tainted} class="w-full">
-				<div class="flex items-center gap-1">
-					<Icon icon="mdi:check" />
-					<span>Submit Changes</span>
-				</div>
-			</Form.Button>
-		</Card.Content>
-	</Card.Root>
-
 	{#if tainted}
-		
+		<div
+			class="rounded-md bg-primary fixed bottom-2 left-1/2 -translate-x-1/2 flex items-center p-3 gap-2 shadow-xl"
+			transition:scale
+		>
+			<span>You have unsaved changes</span>
+			<Button type="button" variant="secondary" disabled={submitting} on:click={() => reset()}>
+				Reset
+			</Button>
+			<Form.Button variant="secondary">Submit</Form.Button>
+		</div>
 	{/if}
 </Form.Root>

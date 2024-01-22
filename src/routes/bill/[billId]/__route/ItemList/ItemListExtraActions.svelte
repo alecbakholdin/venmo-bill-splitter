@@ -33,7 +33,7 @@
 {#if $selectedItems.length > 1}
 	<Tooltip openDelay={0}>
 		<TooltipTrigger asChild={true}>
-			<Button variant="ghost" size="icon" class="h-6 w-6" on:click={handleMerge}>
+			<Button type="button" variant="ghost" size="icon" class="h-6 w-6" on:click={handleMerge}>
 				<Icon icon="mdi:merge" />
 			</Button>
 		</TooltipTrigger>
