@@ -15,7 +15,7 @@
 <Dialog.Root>
 	<Dialog.Trigger>
 		<div class="flex items-center gap-1">
-			<p class="text-xl font-bold">{$formValues.title}</p>
+			<p class="text-xl font-bold text-left">{$formValues.title}</p>
 			<Form.Field {config} name="title">
 				<Form.Validation />
 			</Form.Field>
