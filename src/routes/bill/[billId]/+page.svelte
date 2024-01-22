@@ -11,6 +11,7 @@
 	import FriendList from './__route/FriendList/FriendList.svelte';
 	import ItemList from './__route/ItemList/ItemList.svelte';
 	import PercentAmountEditor from './__route/PercentAmountEditor.svelte';
+	import ItemListExtraActions from './__route/ItemList/ItemListExtraActions.svelte';
 
 	export let data;
 </script>
@@ -57,7 +58,10 @@
 	</Card.Root>
 	<Card.Root class="rounded-lg mx-2 sm:mx-0 mt-4">
 		<Card.Header>
-			<Card.Title class="flex items-center gap-2">Items</Card.Title>
+			<Card.Title class="flex items-center gap-2">
+				<span class="flex-grow">Items</span>
+				<ItemListExtraActions />
+			</Card.Title>
 		</Card.Header>
 		<Card.Content>
 			<ItemList />
