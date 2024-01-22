@@ -6,11 +6,11 @@
 	import Switch from '$lib/components/ui/switch/switch.svelte';
 	import type { CreateInviteLinkSchema } from '$lib/types/inviteAuth.server';
 	import Icon from '@iconify/svelte';
-	import { onMount } from 'svelte';
 	import type { z } from 'zod';
 	import { linkStore } from './linkStores';
 
 	export let billId: string;
+	export let billSlug: string;
 
 	let useSplitUrl = true;
 
@@ -22,7 +22,8 @@
 
 		const payload: z.infer<typeof CreateInviteLinkSchema> = {
 			action,
-			billId
+			billId,
+			billSlug
 		};
 		const response = await fetch('/api/invite/create', {
 			method: 'POST',

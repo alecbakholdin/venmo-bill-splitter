@@ -12,6 +12,7 @@
 	import Icon from '@iconify/svelte';
 
 	export let billId: string;
+	export let billSlug: string;
 </script>
 
 <Dialog>
@@ -25,6 +26,6 @@
 			<DialogTitle>Invite Friends</DialogTitle>
 		</DialogHeader>
 		
-			<BillFriendInviterContent {billId}/>
+			<BillFriendInviterContent {billId} {billSlug}/>
 	</DialogContent>
 </Dialog>

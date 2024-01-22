@@ -6,6 +6,7 @@ import { superValidate } from 'sveltekit-superforms/server';
 import { getBillFromJwt } from '../../../../lib/types/inviteAuth.server';
 import { formatVenmo } from '../__route/VenmoPersonRow.svelte';
 import { InviteSchema } from './__route/inviteForm';
+import { createOrUpdateFriend } from '$lib/friends.util';
 
 export async function load({ url, params }) {
 	const bill = await getBillFromJwt(url.searchParams.get('auth'), params.billId, 'invite');
@@ -20,12 +21,10 @@ export const actions = {
 		const venmo = formatVenmo(form.data.venmo);
 		const email = form.data.email;
 		const friendDefaults = getDefaults(FriendSchema);
-		await fetch('/api/friend', {
-			method: 'POST',
-			body: JSON.stringify({ ...friendDefaults, email, venmo })
-		});
 
-		const bill = await getBillFromJwt(url.searchParams.get('auth'), params.billId, 'invite');
+		const bill = await getBillFromJwt(url.searchParams.get('auth'), params.billId, 'split');
+		await createOrUpdateFriend({...friendDefaults, email, venmo}, bill.data().user);
+		
 		const billData = bill.data();
 		for (let i = 0; i < billData.items.length; i++) {
 			const billItem = billData.items[i];

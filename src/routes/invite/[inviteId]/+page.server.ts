@@ -2,7 +2,7 @@ import { inviteLinkCollection } from '$lib/firestore/collections.server.js';
 import { addDays } from '$lib/utils';
 import { error, redirect } from '@sveltejs/kit';
 
-export async function load({ params }) {
+export async function load({ params, url }) {
 	const linkQuery = await inviteLinkCollection
 		.where('id', '==', params.inviteId)
 		.where('expiration', '>=', addDays(new Date(), -7).toISOString())
@@ -10,6 +10,7 @@ export async function load({ params }) {
 		.get();
 
 	if (linkQuery.empty) throw error(404, { message: 'Link is expired or invalid' });
-	const { link } = linkQuery.docs[0].data();
+	const { billSlug, action, authToken } = linkQuery.docs[0].data();
+	const link = `${url.origin}/bill/${billSlug}/${action}?auth=${authToken}`;
 	throw redirect(308, link);
 }

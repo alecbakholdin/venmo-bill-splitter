@@ -6,6 +6,7 @@ import { getBillFromJwt } from '../../../../lib/types/inviteAuth.server';
 import { SplitBillSchema } from './__route/splitForm';
 import { getDefaults } from '$lib/utils';
 import { FriendSchema } from '$lib/firestore/schemas/Friend';
+import { createOrUpdateFriend } from '$lib/friends.util';
 
 export async function load({ url, params }) {
 	const bill = await getBillFromJwt(url.searchParams.get('auth'), params.billId, 'split');
@@ -16,7 +17,7 @@ export async function load({ url, params }) {
 }
 
 export const actions = {
-	async default({ request, params, url, fetch }) {
+	async default({ request, params, url }) {
 		const form = await superValidate(request, SplitBillSchema);
 		if (!form.valid) return fail(400, { form });
 		console.log(form.data);;
@@ -24,15 +25,10 @@ export const actions = {
 		const email = form.data.email;
 		const friendDefaults = getDefaults(FriendSchema);
 		console.log({...friendDefaults, email, venmo});
-		const resp = await fetch('/api/friend', {
-			method: 'POST',
-			body: JSON.stringify({ ...friendDefaults, email, venmo }),
-			credentials: 'include'
-		});
-		console.log(resp.status);
-		console.log(JSON.stringify(resp, null, 2));
-
+		
 		const bill = await getBillFromJwt(url.searchParams.get('auth'), params.billId, 'split');
+		await createOrUpdateFriend({...friendDefaults, email, venmo}, bill.data().user);
+
 		const billData = bill.data();
 		for (let i = 0; i < billData.items.length; i++) {
 			const billItem = billData.items[i];

@@ -11,7 +11,7 @@ const anonPaths = [
 	'/api/venmo/u',
 	'/bill/[billId]/invite',
 	'/bill/[billId]/split',
-	'/invite'
+	'/invite',
 ] as const;
 
 function isAnonPathId(path: string | null) {

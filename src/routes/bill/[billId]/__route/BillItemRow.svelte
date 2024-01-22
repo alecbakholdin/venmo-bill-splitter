@@ -86,7 +86,7 @@
 						<FormLabel>Unit Price</FormLabel>
 						<FormInput
 							type="number"
-							inputmode="numeric"
+							inputmode="decimal"
 							step="0.01"
 							placeholder="Unit Price"
 							on:enter={onEnter}
@@ -116,7 +116,7 @@
 										</div>
 										<FormInput
 											type="number"
-											inputmode="numeric"
+											inputmode="decimal"
 											step="0.01"
 											placeholder="Shares"
 											class="p-0 text-center w-12 sm:w-20"

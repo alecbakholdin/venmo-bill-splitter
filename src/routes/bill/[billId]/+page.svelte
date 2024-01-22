@@ -4,16 +4,13 @@
 	import * as Form from '$lib/components/ui/form';
 	import { BillSchema } from '$lib/firestore/schemas/Bill';
 	import Icon from '@iconify/svelte';
-	import { slide } from 'svelte/transition';
 	import BillCreateFriend from './__route/BillCreateFriend.svelte';
 	import BillExtraActions from './__route/BillExtraActions.svelte';
 	import BillFriendInviter from './__route/BillFriendInviter/BillFriendInviter.svelte';
-	import BillItemRow from './__route/BillItemRow.svelte';
 	import BillTitle from './__route/BillTitle.svelte';
-	import PercentAmountEditor from './__route/PercentAmountEditor.svelte';
-	import { page } from '$app/stores';
 	import FriendList from './__route/FriendList/FriendList.svelte';
 	import ItemList from './__route/ItemList/ItemList.svelte';
+	import PercentAmountEditor from './__route/PercentAmountEditor.svelte';
 
 	export let data;
 </script>
@@ -92,7 +89,7 @@
 		<Card.Header class="relative">
 			<Card.Title>People</Card.Title>
 			<div class="absolute top-4 right-8 flex gap-1 items-center">
-				<BillFriendInviter billId={data.bill.slug} />
+				<BillFriendInviter billId={data.billId} billSlug={data.bill.slug} />
 			</div>
 		</Card.Header>
 		<Card.Content>

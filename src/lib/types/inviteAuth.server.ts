@@ -1,11 +1,12 @@
 import jwt from 'jsonwebtoken';
 import { AUTH_SECRET } from '$env/static/private';
-import { error } from '@sveltejs/kit';
-import { getBill } from '../../routes/bill/[billId]/__route/utils.server';
+import { error, redirect } from '@sveltejs/kit';
+import { getBillById, getBillBySlug } from '../../routes/bill/[billId]/__route/utils.server';
 import { z } from 'zod';
 
 export const CreateInviteLinkSchema = z.object({
 	billId: z.string(),
+	billSlug: z.string(),
 	action: z.enum(['split', 'invite'])
 });
 export const InviteAuthPayloadSchema = z.object({
@@ -37,8 +38,14 @@ export async function getBillFromJwt(
 	expectedAction: 'split' | 'invite'
 ) {
 	const { billId, billOwner, action } = decodeInviteJwt(token);
-	if (billId !== urlBillId || action !== expectedAction)
-		throw error(403, { message: 'Wrong bill' });
+	if (action !== expectedAction) {
+		throw error(401, 'Unauthorized action ' + action);
+	}
 
-	return await getBill(billId, billOwner);
+	const bill = await getBillById(billId, billOwner);
+	const billData = bill.data();
+	if (billData.slug !== urlBillId) {
+		throw redirect(308, `/bill/${billData.slug}/${action}?auth=${token}`);
+	}
+	return bill;
 }

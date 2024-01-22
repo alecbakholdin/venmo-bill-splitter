@@ -9,7 +9,7 @@ import { getUser } from '$lib/utils.server.js';
 import { json } from '@sveltejs/kit';
 
 export async function POST({ request, locals, url }) {
-	const { billId, action } = CreateInviteLinkSchema.parse(await request.json());
+	const { billSlug, billId, action } = CreateInviteLinkSchema.parse(await request.json());
 	const { email } = await getUser(locals);
 	const authPayload: InviteAuthPayload = {
 		billId,
@@ -17,13 +17,16 @@ export async function POST({ request, locals, url }) {
 		billOwner: email
 	};
 	const authToken = createInviteJwt(authPayload);
-	const authLink = `${url.origin}/bill/${billId}/${action}?auth=${authToken}`;
+	const authLink = `${url.origin}/bill/${billSlug}/${action}?auth=${authToken}`;
 	const authId = randomId();
 
 	await inviteLinkCollection.add({
 		expiration: addDays(new Date(), 7).toISOString(),
 		id: authId,
-		link: authLink
+		billId,
+		billSlug,
+		action,
+		authToken,
 	});
 	return json({
 		fullInviteLink: authLink,

@@ -1,12 +1,13 @@
 import { BillSchema } from '$lib/firestore/schemas/Bill.js';
 import { fail, redirect } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/server';
-import { billExists, getBill } from './__route/utils.server.js';
+import { billExists, getBillBySlug } from './__route/utils.server.js';
 import { createInviteJwt } from '../../../lib/types/inviteAuth.server.js';
 import type { z } from 'zod';
 
 export async function load({ params, locals, url }) {
-	const bill = (await getBill(params.billId, locals)).data();
+	const billDoc = (await getBillBySlug(params.billId, locals));
+	const bill = billDoc.data();
 
 	const editBillForm = await superValidate(BillSchema);
 	editBillForm.data = bill as z.infer<typeof BillSchema>;
@@ -21,6 +22,7 @@ export async function load({ params, locals, url }) {
 		'/split?auth=' +
 		createInviteJwt({ billId: bill.slug, billOwner: bill.user, action: 'split' });
 	return {
+		billId: billDoc.id,
 		bill,
 		billInviteUrl,
 		billSplitUrl,
@@ -34,7 +36,7 @@ export const actions = {
 		if (!form.valid) return fail(400, { form });
 
 		const [bill, exists] = await Promise.all([
-			getBill(params.billId, locals),
+			getBillBySlug(params.billId, locals),
 			billExists(form.data.slug, locals)
 		]);
 		const titleIsChanged = params.billId.toLowerCase() !== form.data.slug;

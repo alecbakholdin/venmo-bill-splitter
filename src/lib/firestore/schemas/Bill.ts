@@ -10,7 +10,7 @@ export const BillItemSchema = z
 	.object({
 		title: z.string(),
 		quantity: z.number().int().nonnegative(),
-		unitPrice: z.number().nonnegative(),
+		unitPrice: z.number(),
 		total: z.number().nonnegative(),
 		splitType: z.enum(['shares']),
 		addNewFriends: z.boolean().optional(),
