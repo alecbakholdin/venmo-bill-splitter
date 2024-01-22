@@ -36,6 +36,7 @@
 		const response = await fetch('/api/friend', { method: 'POST', body: JSON.stringify(friend) });
 		if (response.status !== 200) return undefined;
 		const createdFriend = (await response.json()) as Friend;
+		console.log(createdFriend);
 		addToCache(createdFriend);
 		return createdFriend;
 	}
