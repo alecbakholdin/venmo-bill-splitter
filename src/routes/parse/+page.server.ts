@@ -88,7 +88,7 @@ async function createBill(email: string, result: z.infer<typeof ReceiptModelSche
 	}
 	// adjust if necessary
 	const adjustment = (result.Subtotal ?? 0) - calculatedSubtotal;
-	if (adjustment && result.Subtotal) {
+	if (Math.abs(adjustment) > 0.01 && result.Subtotal) {
 		bill.items.unshift({
 			...defaultItem,
 			title: 'Missing Value',
