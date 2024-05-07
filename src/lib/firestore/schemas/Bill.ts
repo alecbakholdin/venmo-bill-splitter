@@ -57,7 +57,7 @@ export const BillSchema = z
 		subtotal: z.number(),
 		tax: z.number().optional(),
 		tip: z.number().optional(),
-		total: z.number()
+		total: z.number(),
 	})
 	.transform((values) => {
 		const subtotal = values.items.reduce(
