@@ -5,7 +5,8 @@
 		FormField,
 		FormInput,
 		FormLabel,
-		FormValidation
+		FormValidation,
+		FormMessage
 	} from '$lib/components/ui/form';
 	import { LoginSchema } from './__route/schemas/loginSchema.js';
 
@@ -21,15 +22,16 @@
 		<div class="flex flex-col gap-2">
 			<FormField {config} name="usernameOrEmail">
 				<FormLabel>Username or Email</FormLabel>
-				<FormInput placeholder="Username or Email" />
+				<FormInput placeholder="Username or Email" autocomplete="username" />
 				<FormValidation />
 			</FormField>
 			<FormField {config} name="password">
 				<FormLabel>Password</FormLabel>
-				<FormInput placeholder="Password" type="password" />
+				<FormInput placeholder="Password" type="password" autocomplete="current-password" />
 				<FormValidation />
 			</FormField>
 			<FormButton>Submit</FormButton>
+			<FormMessage class="text-muted-foreground text-sm pb-4" />
 		</div>
 	</Form>
 </div>

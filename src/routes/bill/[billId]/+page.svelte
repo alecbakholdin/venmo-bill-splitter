@@ -13,6 +13,7 @@
 	import ItemList from './__route/ItemList/ItemList.svelte';
 	import ItemListExtraActions from './__route/ItemList/ItemListExtraActions.svelte';
 	import PercentAmountEditor from './__route/PercentAmountEditor.svelte';
+	import { goto } from '$app/navigation';
 
 	export let data;
 </script>
@@ -95,8 +96,15 @@
 
 	<Card.Root class="rounded-lg mx-2 sm:mx-0 mt-4">
 		<Card.Header class="relative">
-			<Card.Title>People</Card.Title>
+			<Card.Title>
+				People {data?.bill?.friends?.length ? `(${data.bill.friends.length})` : ''}
+			</Card.Title>
 			<div class="absolute top-4 right-8 flex gap-1 items-center">
+				<form action="{data.bill.slug}/venmo">
+					<Button class="h-8 w-8 text-lg" variant="ghost" size="icon">
+						<Icon icon="bxl:venmo" />
+					</Button>
+				</form>
 				<BillFriendInviter billId={data.billId} billSlug={data.bill.slug} />
 			</div>
 		</Card.Header>
@@ -109,7 +117,7 @@
 	</Card.Root>
 	{#if tainted}
 		<div
-			class="rounded-md bg-primary fixed bottom-2 left-1/2 -translate-x-1/2 flex items-center p-3 gap-2 shadow-xl"
+			class="rounded-md bg-primary fixed bottom-2 left-1/2 -translate-x-1/2 flex items-center p-1 gap-2 shadow-xl"
 			transition:scale
 		>
 			<span>You have unsaved changes</span>

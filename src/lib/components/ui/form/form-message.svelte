@@ -8,5 +8,13 @@
 </script>
 
 <span {...$$restProps}>
-	{$message}
+	{#if $message && typeof $message === 'object'}
+		{#if $message.message}
+			{$message.message ?? ''}
+		{:else}
+			{JSON.stringify($message)}
+		{/if}
+	{:else}
+		{$message ?? ''}
+	{/if}
 </span>
