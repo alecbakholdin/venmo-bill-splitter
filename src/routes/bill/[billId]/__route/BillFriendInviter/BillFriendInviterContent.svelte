@@ -46,7 +46,8 @@
 		if (typeof navigator !== 'undefined') navigator?.clipboard?.writeText?.(url);
 	}
 	function canShare(url: string) {
-		return typeof navigator !== 'undefined' && navigator.canShare({ url });
+		console.log(navigator)
+		return typeof navigator !== 'undefined' && navigator?.canShare?.({ url });
 	}
 	function handleShare(url: string) {
 		canShare(url) && navigator.share({ url });

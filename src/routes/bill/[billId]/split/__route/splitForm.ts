@@ -4,5 +4,5 @@ import { z } from 'zod';
 export const SplitBillSchema = z.object({
 	email: z.string().email().toLowerCase(),
 	venmo: VenmoSchema.optional(),
-	items: z.array(z.boolean())
+	items: z.array(z.number())
 });

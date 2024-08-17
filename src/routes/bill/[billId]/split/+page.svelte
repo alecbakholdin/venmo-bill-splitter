@@ -9,16 +9,18 @@
 		FormValidation
 	} from '$lib/components/ui/form';
 	import FormDescription from '$lib/components/ui/form/form-description.svelte';
+	import { Switch } from '$lib/components/ui/switch';
 	import { Separator } from '$lib/components/ui/separator';
 	import { localStorageStore } from '$lib/localStorageStore';
 	import { slide } from 'svelte/transition';
 	import VenmoPersonRow from '../__route/VenmoPersonRow.svelte';
 	import { SplitBillSchema } from './__route/splitForm.js';
+	import type { Writable } from 'svelte/store';
 
 	export let data;
 	function getSelected(email: string) {
 		return data.bill.items.map(
-			(item) => !!item.friends.find((fr) => fr.email === email.toLowerCase())
+			(item) => item.friends.find((fr) => fr.email === email.toLowerCase())?.splitValue ?? 0
 		);
 	}
 
@@ -27,6 +29,11 @@
 	data.splitForm.data.email = $email;
 	data.splitForm.data.items = getSelected($email);
 	data.splitForm.data.venmo = $venmo;
+
+	const splitByItemFraction: Writable<boolean> = localStorageStore(
+		'_splitByItemFraction_key',
+		false
+	);
 </script>
 
 <svelte:head>
@@ -85,18 +92,38 @@
 			Select the items that you are responsible for. If you split an item with another person, both
 			of you will need to select the item on your own devices.
 		</p>
+		<div class="flex w-full justify-end gap-2 pb-2">
+			<span>Choose custom amount</span>
+			<Switch bind:checked={$splitByItemFraction} />
+		</div>
 		{#each data.bill.items as item, i}
-			{@const selected = formValues.items[i]}
+			{@const shares = formValues.items[i]}
 			<FormField {config} name="items[{i}]">
 				<div class="flex items-center gap-x-2 w-full">
-					<FormCheckbox
-						checked={selected}
-						on:click={() =>
-							form.form.update(($data) => {
-								$data.items.splice(i, 1, !selected);
-								return $data;
-							})}
-					/>
+					{#if $splitByItemFraction}
+						<FormInput
+							type="number"
+							value="shares"
+							on:change={(x) =>
+								form.form.update(($data) => {
+									const newCount = x.currentTarget.valueAsNumber;
+									$data.items.splice(i, 1, newCount);
+									return $data;
+								})}
+						/>
+					{:else}
+						<FormCheckbox
+							checked={shares === 1 || (shares > 0 && 'indeterminate')}
+							on:click={() =>
+								setTimeout(() =>
+									form.form.update(($data) => {
+										const newCount = shares > 0 ? 0 : 1;
+										$data.items.splice(i, 1, newCount);
+										return $data;
+									})
+								)}
+						/>
+					{/if}
 					<FormLabel class="w-full flex justify-between">
 						<div class="flex flex-col gap-1">
 							<p>{item.title}</p>
