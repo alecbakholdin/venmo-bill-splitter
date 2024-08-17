@@ -41,6 +41,7 @@
 	{#each item.friends as friend, i (friend.email)}
 		<div class="flex gap-2 items-center justify-between" transition:slide>
 			<Friend email={friend.email} />
+			<span>{friend.splitValue}</span>
 			<Button
 				type="button"
 				variant="secondary"

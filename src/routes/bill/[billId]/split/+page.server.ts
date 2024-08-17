@@ -34,11 +34,15 @@ export const actions = {
 			const billItem = billData.items[i];
 			const friendInBillItem = Boolean(billItem.friends.find((fr) => fr.email === email));
 			const friendShouldBeInBillItem = Boolean(form.data.items[i]);
-			if (friendInBillItem === friendShouldBeInBillItem) continue;
-			else if (!friendInBillItem) {
-				billItem.friends.push({ splitValue: 1, email, totalOwed: 0 });
+			if (!friendShouldBeInBillItem) {
+				billItem.friends = billItem.friends.filter(x => x.email === email)
+			} else if (!friendInBillItem) {
+				billItem.friends.push({ splitValue: form.data.items[i], email, totalOwed: 0 });
 			} else if (friendInBillItem) {
-				billItem.friends = billItem.friends.filter((fr) => fr.email !== email);
+				const friend = billItem.friends.find(x => x.email === email)
+				if (friend) {
+					friend.splitValue = form.data.items[i]
+				}
 			}
 		}
 		if (!billData.friends.find((x) => x.email === email)) {
