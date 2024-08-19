@@ -35,7 +35,7 @@ export const actions = {
 			const friendInBillItem = Boolean(billItem.friends.find((fr) => fr.email === email));
 			const friendShouldBeInBillItem = Boolean(form.data.items[i]);
 			if (!friendShouldBeInBillItem) {
-				billItem.friends = billItem.friends.filter(x => x.email === email)
+				billItem.friends = billItem.friends.filter(x => x.email !== email)
 			} else if (!friendInBillItem) {
 				billItem.friends.push({ splitValue: form.data.items[i], email, totalOwed: 0 });
 			} else if (friendInBillItem) {
