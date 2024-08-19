@@ -7,6 +7,7 @@ import { SplitBillSchema } from './__route/splitForm';
 import { getDefaults } from '$lib/utils';
 import { FriendSchema } from '$lib/firestore/schemas/Friend';
 import { createOrUpdateFriend } from '$lib/friends.util';
+import { split } from 'lodash';
 
 export async function load({ url, params }) {
 	const bill = await getBillFromJwt(url.searchParams.get('auth'), params.billId, 'split');
@@ -32,17 +33,17 @@ export const actions = {
 		const billData = bill.data();
 		for (let i = 0; i < billData.items.length; i++) {
 			const billItem = billData.items[i];
-			const friendInBillItem = Boolean(billItem.friends.find((fr) => fr.email === email));
-			const friendShouldBeInBillItem = Boolean(form.data.items[i]);
-			if (!friendShouldBeInBillItem) {
+			const friend = billItem.friends.find(fr => fr.email === email)
+			const splitAmount = form.data.items[i]
+			const isFriendInBillItem = Boolean(friend)
+			const shouldFriendBeInBillItem = Boolean(splitAmount)
+
+			if(shouldFriendBeInBillItem && isFriendInBillItem) {
+				friend!.splitValue = splitAmount;
+			} else if (shouldFriendBeInBillItem && !isFriendInBillItem) {
+				billItem.friends.push({ splitValue: splitAmount, email, totalOwed: 0 });
+			} else if (!shouldFriendBeInBillItem) {
 				billItem.friends = billItem.friends.filter(x => x.email !== email)
-			} else if (!friendInBillItem) {
-				billItem.friends.push({ splitValue: form.data.items[i], email, totalOwed: 0 });
-			} else if (friendInBillItem) {
-				const friend = billItem.friends.find(x => x.email === email)
-				if (friend) {
-					friend.splitValue = form.data.items[i]
-				}
 			}
 		}
 		if (!billData.friends.find((x) => x.email === email)) {
