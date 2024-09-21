@@ -104,6 +104,7 @@
 						<FormInput
 							type="number"
 							value="shares"
+							step="0.01"
 							on:change={(x) =>
 								form.form.update(($data) => {
 									const newCount = x.currentTarget.valueAsNumber;
